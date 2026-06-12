@@ -33,7 +33,6 @@
             transition: direction 0.3s;
         }
 
-        /* ضبط الاتجاه للإنجليزي */
         html[lang="en"] body { direction: ltr; }
 
         .game-container {
@@ -65,7 +64,7 @@
             font-weight: 900;
             margin: 1rem 0;
             color: var(--orange);
-            direction: ltr; /* المعادلات دائماً من اليسار لليمين */
+            direction: ltr;
             text-shadow: 0 0 15px rgba(255, 123, 0, 0.2);
             min-height: 80px;
             display: flex;
@@ -133,7 +132,6 @@
             cursor: pointer;
             text-decoration: none;
         }
-        /* في الإنجليزي زر الرئيسية يروح يمين */
         html[lang="en"] .bottom-left-action { left: auto; right: 12px; }
 
         #game-over {
@@ -164,7 +162,8 @@
     <div class="game-container" id="game-card">
         <div class="header">
             <div class="score-display"><span id="scoreLabel">النقاط:</span> <span id="score">0</span></div>
-            <div class="timer">⏳ <span id="time">20</span></div>
+            <!-- تم التعديل هنا لظهور 50 عند البداية -->
+            <div class="timer">⏳ <span id="time">50</span></div>
         </div>
 
         <div id="instruction" style="font-size: 0.85rem; color: #888; margin-bottom: 5px;">أوجد قيمة ( ؟ )</div>
@@ -185,7 +184,7 @@
 
     <script>
         let score = 0;
-        let time = 20;
+        let time = 50; // تم تعديل الوقت الابتدائي برمجياً
         let correctAnswer = 0;
         let timer;
 
@@ -197,26 +196,8 @@
         const cEl = document.getElementById('game-card');
 
         const langData = {
-            ar: {
-                instruction: "أوجد قيمة ( ؟ )",
-                score: "النقاط:",
-                submit: "تحقق",
-                over: "انتهى الوقت!",
-                final: "نقاطك:",
-                retry: "محاولة أخرى",
-                home: "الرئيسية",
-                qMark: "؟"
-            },
-            en: {
-                instruction: "Find the value of ( ? )",
-                score: "Score:",
-                submit: "Check",
-                over: "Time's Up!",
-                final: "Your Score:",
-                retry: "Try Again",
-                home: "Home",
-                qMark: "?"
-            }
+            ar: { instruction: "أوجد قيمة ( ؟ )", score: "النقاط:", submit: "تحقق", over: "انتهى الوقت!", final: "نقاطك:", retry: "محاولة أخرى", home: "الرئيسية", qMark: "؟" },
+            en: { instruction: "Find the value of ( ? )", score: "Score:", submit: "Check", over: "Time's Up!", final: "Your Score:", retry: "Try Again", home: "Home", qMark: "?" }
         };
 
         function applyLanguage() {
@@ -237,20 +218,16 @@
 
         function convertArabicNumbers(str) {
             const arabicDigits = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
-            for (let i = 0; i < 10; i++) {
-                str = str.replace(arabicDigits[i], i);
-            }
+            for (let i = 0; i < 10; i++) { str = str.replace(arabicDigits[i], i); }
             return str;
         }
 
         function generate() {
             const lang = localStorage.getItem('yayaLang') || 'ar';
             const qMark = langData[lang].qMark;
-
             const level = Math.floor(score / 60);
             const ops = ['+', '-', '×', '÷'];
             let op = ops[Math.floor(Math.random() * 4)];
-            
             let n1, n2, result;
 
             if (op === '+') {
@@ -272,7 +249,6 @@
             }
 
             const missingSlot = Math.random() < 0.5 ? 1 : 2;
-            
             if (missingSlot === 1) {
                 correctAnswer = n1;
                 qEl.innerHTML = `<span class="missing-box">${qMark}</span> ${op} ${n2} = ${result}`;
@@ -280,14 +256,14 @@
                 correctAnswer = n2;
                 qEl.innerHTML = `${n1} ${op} <span class="missing-box">${qMark}</span> = ${result}`;
             }
-
             iEl.value = '';
             iEl.focus();
         }
 
         function runClock() {
             clearInterval(timer);
-            time = Math.max(7, 20 - Math.floor(score / 100));
+            // تم تعديل المعادلة لتبدأ من 50 وتتناقص تدريجياً، بحد أدنى 10 ثوانٍ
+            time = Math.max(10, 50 - Math.floor(score / 100));
             tEl.innerText = time;
             timer = setInterval(() => {
                 time--;
@@ -303,7 +279,6 @@
         function process() {
             let val = convertArabicNumbers(iEl.value);
             if (val === "") return;
-            
             if (parseInt(val) === correctAnswer) {
                 score += 10;
                 sEl.innerText = score;

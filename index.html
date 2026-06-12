@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" id="html-tag">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>YAYA ZONE | ذكاء وليونة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
@@ -17,6 +17,7 @@
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation; /* يحسن سرعة اللمس على الفون */
         }
 
         body {
@@ -27,53 +28,56 @@
             padding: 0;
             background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%);
             transition: direction 0.3s ease;
+            overflow-x: hidden; /* يمنع الاهتزاز الجانبي */
         }
 
         header {
-            background-color: rgba(22, 22, 22, 0.9);
-            padding: 20px;
+            background-color: rgba(22, 22, 22, 0.95);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 3px solid #ff8800;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            border-radius: 0 0 30px 30px;
+            position: sticky; /* يظل ثابت في الأعلى */
+            top: 0;
+            z-index: 1000;
+            border-radius: 0 0 20px 20px;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: clamp(18px, 5vw, 24px);
             font-weight: 900;
             color: #ff8800;
             text-shadow: 0 0 15px rgba(255, 136, 0, 0.3);
-            letter-spacing: 1px;
         }
 
-        /* زر تغيير اللغة المطور */
         .lang-btn {
             background: #222;
             color: #ff8800;
             border: 1px solid #ff8800;
-            padding: 8px 15px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            border-radius: 10px;
             font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
             transition: 0.2s;
-            box-shadow: 0 3px 0 #000;
         }
 
         .lang-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #000;
+            transform: scale(0.95);
+            background: #ff8800;
+            color: #000;
         }
 
         .hero {
-            padding: 40px 20px;
+            padding: 30px 15px;
             text-align: center;
         }
 
         .hero h1 {
-            font-size: 28px;
+            font-size: clamp(22px, 8vw, 32px);
             font-weight: 900;
             margin: 0;
         }
@@ -81,12 +85,23 @@
         .hero h1 span { color: #ff8800; }
 
         .games-container {
-            padding: 20px;
+            padding: 10px 15px;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr); /* عمودين في الموبايل */
+            gap: 15px;
             max-width: 1100px;
             margin: 0 auto;
+        }
+
+        /* تحسين للشاشات الصغيرة جداً */
+        @media (max-width: 350px) {
+            .games-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .games-container { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media (min-width: 992px) {
@@ -95,40 +110,38 @@
 
         .game-card {
             background-color: var(--card-bg);
-            border-radius: 25px;
-            padding: 10px;
+            border-radius: 20px;
+            padding: 12px;
             border: 1px solid #252525;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            justify-content: space-between;
+            transition: 0.3s;
         }
 
         .game-thumb {
             width: 100%;
-            height: 100px;
+            aspect-ratio: 1 / 1; /* يخلي المربع متساوي الطول والعرض */
             background: #1f1f1f;
-            border-radius: 20px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: clamp(30px, 10vw, 45px);
+            margin-bottom: 12px;
         }
 
         .game-info {
             text-align: center;
-            padding: 5px;
         }
 
         .game-info h3 {
-            font-size: 15px;
-            margin: 0 0 15px 0;
+            font-size: 14px;
+            margin: 0 0 12px 0;
             font-weight: 700;
             color: #fff;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: 35px;
+            line-height: 1.3;
         }
 
         .play-btn {
@@ -136,31 +149,29 @@
             color: #000;
             text-decoration: none;
             font-weight: 900;
-            font-size: 15px;
-            padding: 14px 0;
+            font-size: 14px;
+            padding: 12px 5px;
             display: block;
-            border-radius: 18px;
-            position: relative;
-            box-shadow: 0 5px 0px var(--orange-dark);
-            transition: all 0.1s ease;
+            border-radius: 12px;
+            box-shadow: 0 4px 0px var(--orange-dark);
+            transition: 0.1s;
         }
 
         .play-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0px var(--orange-dark);
+            transform: translateY(2px);
+            box-shadow: 0 1px 0px var(--orange-dark);
         }
 
         footer {
-            padding: 60px 20px;
+            padding: 40px 20px;
             text-align: center;
-            color: #444;
-            font-size: 14px;
+            color: #666;
+            font-size: 12px;
+            line-height: 1.8;
         }
 
-        /* ستايل عند تغيير اللغة للإنجليزية */
-        html[lang="en"] {
-            direction: ltr;
-        }
+        /* تحويل الاتجاه */
+        html[lang="en"] { direction: ltr; }
     </style>
 </head>
 <body>
@@ -213,33 +224,27 @@
     </main>
 
     <footer>
-        <span id="footerText">YAYA ZONE &copy; 2026 - ألعاب ذكاء مصممة بدقة</span>
+        <span id="footerText">YAYA ZONE &copy; 2026<br>ألعاب ذكاء مصممة بدقة لتناسب هاتفك</span>
     </footer>
 
     <script>
-        // النصوص المترجمة
         const translations = {
             ar: {
                 hero: 'تحدي <span>الأذكياء</span>',
                 langBtn: 'English',
-                footer: 'YAYA ZONE &copy; 2026 - ألعاب ذكاء مصممة بدقة'
+                footer: 'YAYA ZONE &copy; 2026<br>ألعاب ذكاء مصممة بدقة لتناسب هاتفك'
             },
             en: {
                 hero: '<span>Genius</span> Challenge',
                 langBtn: 'العربية',
-                footer: 'YAYA ZONE &copy; 2026 - Precision Intelligence Games'
+                footer: 'YAYA ZONE &copy; 2026<br>Precision Intelligence Games for Mobile'
             }
         };
 
         function toggleLanguage() {
-            // التحقق من اللغة الحالية
             let currentLang = localStorage.getItem('yayaLang') || 'ar';
             let newLang = currentLang === 'ar' ? 'en' : 'ar';
-            
-            // حفظ اللغة الجديدة
             localStorage.setItem('yayaLang', newLang);
-            
-            // تطبيق اللغة
             applyLanguage(newLang);
         }
 
@@ -249,22 +254,18 @@
             const langBtn = document.getElementById('langBtn');
             const footerText = document.getElementById('footerText');
 
-            // تغيير الاتجاه واللغة في الوسم الرئيسي
             html.lang = lang;
             html.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
-            // تغيير النصوص العامة
             heroTitle.innerHTML = translations[lang].hero;
             langBtn.innerText = translations[lang].langBtn;
             footerText.innerHTML = translations[lang].footer;
 
-            // تغيير نصوص الكروت (العناوين والأزرار)
             document.querySelectorAll('[data-ar]').forEach(el => {
                 el.innerText = el.getAttribute(`data-${lang}`);
             });
         }
 
-        // عند تحميل الصفحة، نتحقق من اللغة المحفوظة
         window.onload = () => {
             const savedLang = localStorage.getItem('yayaLang') || 'ar';
             applyLanguage(savedLang);

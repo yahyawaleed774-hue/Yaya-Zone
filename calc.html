@@ -33,7 +33,6 @@
             transition: direction 0.3s;
         }
 
-        /* تنسيق الاتجاه للإنجليزي */
         html[lang="en"] body { direction: ltr; }
 
         .game-container {
@@ -65,7 +64,7 @@
             font-weight: 900;
             margin: 1rem 0;
             color: var(--orange);
-            direction: ltr; /* المعادلات دائماً LTR */
+            direction: ltr;
             text-shadow: 0 0 15px rgba(255, 123, 0, 0.2);
             min-height: 70px;
             display: flex;
@@ -123,7 +122,6 @@
             text-decoration: none;
         }
 
-        /* لغات مختلفة لزر الرئيسية بناء على الاتجاه */
         html[lang="en"] .bottom-left-action { left: auto; right: 12px; }
 
         #game-over {
@@ -154,7 +152,8 @@
     <div class="game-container" id="game-card">
         <div class="header">
             <div class="score-display"><span id="scoreLabel">النقاط:</span> <span id="score">0</span></div>
-            <div class="timer">⏳ <span id="time">20</span></div>
+            <!-- تم تعديل الرقم هنا إلى 40 -->
+            <div class="timer">⏳ <span id="time">40</span></div>
         </div>
 
         <div class="question-box" id="question">-- + --</div>
@@ -174,7 +173,7 @@
 
     <script>
         let score = 0;
-        let time = 20;
+        let time = 40; // تم تعديل البداية هنا إلى 40
         let answer = 0;
         let timer;
         let pointsGain = 10;
@@ -186,26 +185,9 @@
         const goEl = document.getElementById('game-over');
         const cEl = document.getElementById('game-card');
 
-        // مصفوفة الترجمة
         const langData = {
-            ar: {
-                score: "النقاط:",
-                submit: "إرسال",
-                over: "انتهى الوقت!",
-                final: "نقاطك:",
-                retry: "إعادة المحاولة",
-                home: "الرئيسية",
-                
-            },
-            en: {
-                score: "Score:",
-                submit: "Submit",
-                over: "Time's Up!",
-                final: "Your Score:",
-                retry: "Try Again",
-                home: "Home",
-                
-            }
+            ar: { score: "النقاط:", submit: "إرسال", over: "انتهى الوقت!", final: "نقاطك:", retry: "إعادة المحاولة", home: "الرئيسية" },
+            en: { score: "Score:", submit: "Submit", over: "Time's Up!", final: "Your Score:", retry: "Try Again", home: "Home" }
         };
 
         function applyLanguage() {
@@ -225,9 +207,7 @@
 
         function convertArabicNumbers(str) {
             const arabicDigits = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
-            for (let i = 0; i < 10; i++) {
-                str = str.replace(arabicDigits[i], i);
-            }
+            for (let i = 0; i < 10; i++) { str = str.replace(arabicDigits[i], i); }
             return str;
         }
 
@@ -242,26 +222,10 @@
                 const ops = ['+', '-', '×', '÷'];
                 let op = ops[Math.floor(Math.random() * ops.length)];
                 let n1, n2;
-
-                if (op === '+') {
-                    n1 = Math.floor(Math.random() * max) + min;
-                    n2 = Math.floor(Math.random() * max) + min;
-                    answer = n1 + n2;
-                } else if (op === '-') {
-                    n1 = Math.floor(Math.random() * max) + (max/2);
-                    n2 = Math.floor(Math.random() * n1) + 1;
-                    answer = n1 - n2;
-                } else if (op === '×') {
-                    n1 = Math.floor(Math.random() * (20 + level)) + 5;
-                    n2 = Math.floor(Math.random() * 10) + 2;
-                    answer = n1 * n2;
-                } else {
-                    let res = Math.floor(Math.random() * (20 + level)) + 2;
-                    n2 = Math.floor(Math.random() * 20) + 2;
-                    n1 = res * n2;
-                    answer = res;
-                    op = '÷';
-                }
+                if (op === '+') { n1 = Math.floor(Math.random() * max) + min; n2 = Math.floor(Math.random() * max) + min; answer = n1 + n2; } 
+                else if (op === '-') { n1 = Math.floor(Math.random() * max) + (max/2); n2 = Math.floor(Math.random() * n1) + 1; answer = n1 - n2; } 
+                else if (op === '×') { n1 = Math.floor(Math.random() * (20 + level)) + 5; n2 = Math.floor(Math.random() * 10) + 2; answer = n1 * n2; } 
+                else { let res = Math.floor(Math.random() * (20 + level)) + 2; n2 = Math.floor(Math.random() * 20) + 2; n1 = res * n2; answer = res; op = '÷'; }
                 qEl.innerText = `${n1} ${op} ${n2}`;
             } else {
                 pointsGain = 20;
@@ -285,7 +249,8 @@
 
         function runClock() {
             clearInterval(timer);
-            time = Math.max(7, 20 - Math.floor(score / 100));
+            // تم تعديل المعادلة هنا لتبدأ من 40 وتتناقص تدريجياً مع زيادة النقاط
+            time = Math.max(10, 40 - Math.floor(score / 100));
             tEl.innerText = time;
             timer = setInterval(() => {
                 time--;

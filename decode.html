@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YAYA ZONE | قريباً</title>
+    <title>YAYA ZONE | فك الشفرات المتطور</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,10 +13,7 @@
             --card-bg: #161616;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--black);
@@ -28,20 +25,16 @@
             justify-content: center;
             min-height: 100vh;
             overflow: hidden;
-            padding: 20px;
-            transition: direction 0.3s;
+            padding: 10px;
         }
 
-        /* تعديل الاتجاه عند اختيار الإنجليزية */
-        html[lang="en"] body {
-            direction: ltr;
-        }
+        html[lang="en"] body { direction: ltr; }
 
-        .coming-soon-container {
+        .game-container {
             background: var(--card-bg);
-            width: 100%;
+            width: 92%;
             max-width: 360px;
-            padding: 3rem 1.5rem;
+            padding: 1.5rem 1.2rem;
             border-radius: 35px;
             border: 2px solid #333;
             text-align: center;
@@ -49,59 +42,69 @@
             position: relative;
         }
 
-        .icon-box {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        h1 {
-            color: var(--orange);
-            font-size: 2.2rem;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
             font-weight: 900;
-            margin: 0 0 10px 0;
-            text-shadow: 0 0 15px rgba(255, 123, 0, 0.3);
+            font-size: 0.9rem;
         }
 
-        p {
-            font-size: 1.1rem;
-            color: #ccc;
-            margin-bottom: 30px;
-            line-height: 1.6;
-            min-height: 80px;
+        .timer { color: var(--orange); font-variant-numeric: tabular-nums; width: 60px; text-align: left; }
+        .score-display { background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 10px; }
+
+        .puzzle-area {
+            background: rgba(0,0,0,0.4);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 15px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #222;
         }
 
-        .progress-container {
+        #explanation-box {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            border-radius: 33px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 5;
+        }
+
+        .explanation-text {
+            color: var(--orange);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        .equation { font-size: 1.3rem; font-weight: 700; direction: ltr; }
+        .sequence-text { font-size: 1.5rem; font-weight: 900; color: var(--orange); letter-spacing: 1px; }
+
+        input {
             width: 100%;
-            height: 10px;
             background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 40px;
-            border: 1px solid #333;
+            border: 2px solid #444;
+            border-radius: 18px;
+            padding: 12px;
+            color: white;
+            font-size: 1.8rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
         }
 
-        .progress-bar {
-            width: 65%;
-            height: 100%;
-            background: linear-gradient(90deg, var(--orange-dark), var(--orange));
-            border-radius: 10px;
-            animation: pulse-bar 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-bar {
-            0% { opacity: 0.6; box-shadow: 0 0 5px var(--orange); }
-            50% { opacity: 1; box-shadow: 0 0 15px var(--orange); }
-            100% { opacity: 0.6; box-shadow: 0 0 5px var(--orange); }
-        }
-
-        .back-btn {
-            background: var(--orange);
+        .submit-btn {
             background: linear-gradient(145deg, #ff8800, #e67700);
             color: #000;
             width: 100%;
@@ -112,65 +115,383 @@
             border-radius: 18px;
             cursor: pointer;
             box-shadow: 0 5px 0 var(--orange-dark);
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.1s;
         }
 
-        .back-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 var(--orange-dark);
-        }
-
-        .footer-text {
-            margin-top: 25px;
+        .bottom-left-action {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            background: #1a1a1a;
+            color: var(--orange);
+            border: 1.5px solid var(--orange);
+            padding: 8px 15px;
+            border-radius: 10px;
             font-size: 0.8rem;
-            color: #555;
-            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        html[lang="en"] .bottom-left-action { left: auto; right: 12px; }
+
+        #game-over {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 18, 18, 0.98);
+            border-radius: 33px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
-    <div class="coming-soon-container">
-        <div class="icon-box">🚀</div>
-        
-        <!-- النصوص مدعمة باللغتين -->
-        <h1 id="title" data-ar="انتظرونا!" data-en="Stay Tuned!">انتظرونا!</h1>
-        
-        <p id="desc" 
-           data-ar="استنّى تحديات جديدة هتكسّر دماغك وتختبر سرعتك في التفكير... قريب في YAYA ZONE!" 
-           data-en="New challenges are coming to blow your mind and test your speed... soon in YAYA ZONE!">
-           استنّى تحديات جديدة هتكسّر دماغك وتختبر سرعتك في التفكير... قريب في YAYA ZONE!
-        </p>
-
-        <div class="progress-container">
-            <div class="progress-bar"></div>
+    <div class="game-container" id="game-card">
+        <div class="header">
+            <div class="score-display"><span id="scoreLabel">النقاط:</span> <span id="score">0</span></div>
+            <div class="timer">⏳ <span id="time">15</span></div>
         </div>
 
-        <a href="index.html" class="back-btn" id="backBtn" data-ar="العودة للرئيسية" data-en="Back Home">العودة للرئيسية</a>
+        <div style="font-size: 0.8rem; color: #888; margin-bottom: 8px;" id="targetLabel">فك الشفرة</div>
 
-        <div class="footer-text" id="footerText" data-ar="قريباً جداً" data-en="COMING SOON">قريباً جداً | COMING SOON</div>
+        <div class="puzzle-area" id="puzzle"></div>
+
+        <input type="text" id="answer" inputmode="numeric" placeholder="؟" autofocus>
+        
+        <button class="submit-btn" id="submitBtn" onclick="process()">تحقق</button>
+
+        <div id="explanation-box">
+            <div id="explEmoji" style="font-size: 1.8rem;">🌟</div>
+            <div class="explanation-text" id="explanation-content"></div>
+            <button class="submit-btn" onclick="nextQuestion()" id="nextBtn">التالي</button>
+        </div>
+
+        <div id="game-over">
+            <h1 id="overTitle" style="color: var(--orange);">انتهى الوقت!</h1>
+            <p><span id="finalLabel">نقاطك:</span> <span id="final-score">0</span></p>
+            <button class="submit-btn" id="retryBtn" onclick="start()" style="width: 80%;">إعادة المحاولة</button>
+        </div>
     </div>
 
+    <a class="bottom-left-action" id="homeBtn" href="index.html">الرئيسية</a>
+
     <script>
-        function applyLanguage() {
-            // جلب اللغة من المتصفح (الافتراضي عربية)
-            const lang = localStorage.getItem('yayaLang') || 'ar';
-            const html = document.getElementById('html-tag');
+        let score = 0, time = 15, correctAnswer = 0, timer, lastType = -1;
+        let puzzleDeck = [];
+        let currentExpl = { ar: "", en: "" };
+        let gamePaused = false;
+        
+        const emojiList = ['🍎','🍌','🍇','🍊','🍓','🍍','🥝','🍒','🍑','🍐','🍔','🍟','🍕','🚀','💎','🔥','⭐','🌙','⚡','🎈'];
+        const vowelWords = [
+            {w:'APPLE', v:2}, {w:'ORANGE', v:3}, {w:'BANANA', v:3}, {w:'HELLO', v:2}, 
+            {w:'COMPUTER', v:3}, {w:'PHONE', v:2}, {w:'GAME', v:2}, {w:'BEACH', v:2}, 
+            {w:'SUN', v:1}, {w:'RAIN', v:2}, {w:'MOON', v:2}
+        ];
 
-            // تحديث لغة واتجاه الصفحة
-            html.lang = lang;
-            html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        const langData = {
+            ar: { score: "النقاط:", target: "اكتشف الشفرة", submit: "تحقق", over: "انتهى الوقت!", final: "نقاطك:", retry: "إعادة المحاولة", home: "الرئيسية", next: "التالي", great: "🌟 رائع!", placeholder: "؟" },
+            en: { score: "Score:", target: "Solve the code", submit: "Check", over: "Time's Up!", final: "Score:", retry: "Try Again", home: "Home", next: "Next", great: "🌟 Great!", placeholder: "Answer?" }
+        };
 
-            // تحديث النصوص بناءً على العناصر التي تملك data-ar و data-en
-            document.querySelectorAll('[data-ar]').forEach(el => {
-                el.innerText = el.getAttribute(`data-${lang}`);
-            });
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         }
 
-        // تشغيل الدالة فور تحميل الصفحة
-        window.onload = applyLanguage;
+        function generate() {
+            const lang = localStorage.getItem('yayaLang') || 'ar';
+            const p = document.getElementById('puzzle'); 
+            p.innerHTML = '';
+            
+            // نظام الحقيبة (25 نوع)
+            if (puzzleDeck.length === 0) {
+                puzzleDeck = Array.from({length: 25}, (_, i) => i);
+                shuffle(puzzleDeck);
+                if (puzzleDeck[puzzleDeck.length - 1] === lastType) shuffle(puzzleDeck);
+            }
+            
+            let type = puzzleDeck.pop();
+            lastType = type;
+
+            // متغيرات عشوائية للأسئلة
+            let val1 = Math.floor(Math.random() * 12) + 2;
+            let val2 = Math.floor(Math.random() * 9) + 1;
+            let val3 = Math.floor(Math.random() * 5) + 2;
+
+            switch(type) {
+                case 0: // فواكه
+                    let f1 = emojiList[Math.floor(Math.random()*10)], f2 = emojiList[Math.floor(Math.random()*10)+10];
+                    p.innerHTML = `<div class="equation">${f1}+${f1}=${val1*2}</div><div class="equation">${f1}+${f2}=${val1+val2}</div><div class="equation">${f2}=?</div>`;
+                    correctAnswer = val2;
+                    currentExpl.ar = `بما أن مجموع ${f1} مع نفسه هو ${val1*2}، فقيمته ${val1}. إذاً ${val1} + ${f2} = ${val1+val2}، فالناتج ${val2}.`;
+                    currentExpl.en = `Since ${f1}+${f1}=${val1*2}, then ${f1}=${val1}. Thus ${val1}+${f2}=${val1+val2}, so ${f2}=${val2}.`;
+                    break;
+                case 1: // نمط جمع
+                    let st1 = Math.floor(Math.random()*20), step1 = Math.floor(Math.random()*8)+2;
+                    p.innerHTML = `<div class="sequence-text">${st1}, ${st1+step1}, ${st1+step1*2}, ?</div>`;
+                    correctAnswer = st1+step1*3;
+                    currentExpl.ar = `النمط هو إضافة ${step1} في كل مرة.`;
+                    currentExpl.en = `The pattern is adding ${step1} at each step.`;
+                    break;
+                case 2: // أضلاع
+                    let shapes = [{'s':'△','v':3,'n':'Triangle','a':'المثلث'}, {'s':'□','v':4,'n':'Square','a':'المربع'}, {'s':'⬠','v':5,'n':'Pentagon','a':'الخماسي'}, {'s':'⬡','v':6,'n':'Hexagon','a':'السداسي'}];
+                    shuffle(shapes);
+                    p.innerHTML = `<div class="sequence-text">${shapes[0].s} + ${shapes[1].s} = ?</div>`;
+                    correctAnswer = shapes[0].v + shapes[1].v;
+                    currentExpl.ar = `نجمع أضلاع الأشكال: ${shapes[0].a}(${shapes[0].v}) + ${shapes[1].a}(${shapes[1].v}) = ${correctAnswer}.`;
+                    currentExpl.en = `Sum of sides: ${shapes[0].n}(${shapes[0].v}) + ${shapes[1].n}(${shapes[1].v}) = ${correctAnswer}.`;
+                    break;
+                case 3: // مرآة
+                    let n3 = Math.floor(Math.random()*80)+11;
+                    let rev3 = parseInt(n3.toString().split('').reverse().join(''));
+                    p.innerHTML = `<div class="sequence-text">${n3} ➔ ${rev3}</div><div class="sequence-text">${n3+1} ➔ ?</div>`;
+                    correctAnswer = parseInt((n3+1).toString().split('').reverse().join(''));
+                    currentExpl.ar = "الشفرة هي عكس ترتيب الأرقام (مثل المرآة).";
+                    currentExpl.en = "The code is reversing the digits.";
+                    break;
+                case 4: // ضعف
+                    let b4 = Math.floor(Math.random()*45)+5;
+                    p.innerHTML = `<div class="sequence-text">${lang === 'ar' ? 'ضعف' : 'Double of'} ${b4} = ?</div>`;
+                    correctAnswer = b4 * 2;
+                    currentExpl.ar = "الضعف يعني ضرب الرقم في 2.";
+                    currentExpl.en = "Double means multiplying the number by 2.";
+                    break;
+                case 5: // حروف
+                    let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    let idx5 = Math.floor(Math.random()*20);
+                    p.innerHTML = `<div class="sequence-text">${alpha[idx5]}=${idx5+1}, ${alpha[idx5+1]}=${idx5+2}, ${alpha[idx5+2]}=?</div>`;
+                    correctAnswer = idx5+3;
+                    currentExpl.ar = `تتبع الشفرة ترتيب الحروف الأبجدية الإنجليزية.`;
+                    currentExpl.en = `The code follows English alphabetical order.`;
+                    break;
+                case 6: // ساعة
+                    let h6 = Math.floor(Math.random()*10)+1, add6 = Math.floor(Math.random()*5)+1;
+                    p.innerHTML = `<div class="sequence-text">${h6}:00 + ${add6}${lang === 'ar' ? 'س' : 'h'} = ?</div>`;
+                    correctAnswer = (h6 + add6) > 12 ? (h6 + add6 - 12) : (h6 + add6);
+                    currentExpl.ar = `احسب الوقت بعد مرور الساعات الموضحة.`;
+                    currentExpl.en = `Calculate the time after the specified hours.`;
+                    break;
+                case 7: // أقواس
+                    let v7_1 = Math.floor(Math.random()*10)+1, v7_2 = Math.floor(Math.random()*10)+1;
+                    p.innerHTML = `<div class="equation">(${v7_1} + ${v7_2}) × 2 = ?</div>`;
+                    correctAnswer = (v7_1 + v7_2) * 2;
+                    currentExpl.ar = "نحل ما بداخل الأقواس أولاً ثم نضرب في 2.";
+                    currentExpl.en = "Solve parentheses first, then multiply by 2.";
+                    break;
+                case 8: // مجموع أرقام
+                    let n8 = Math.floor(Math.random()*80)+10;
+                    let sum8 = n8.toString().split('').reduce((a,b)=>parseInt(a)+parseInt(b),0);
+                    p.innerHTML = `<div class="sequence-text">${n8} ➔ ${sum8}</div><div class="sequence-text">${n8+3} ➔ ?</div>`;
+                    let target8 = n8 + 3;
+                    correctAnswer = target8.toString().split('').reduce((a,b)=>parseInt(a)+parseInt(b),0);
+                    currentExpl.ar = "الشفرة هي ناتج جمع خانات الرقم الموضح.";
+                    currentExpl.en = "The code is the sum of the digits of the number.";
+                    break;
+                case 9: // تربيع
+                    let s9 = Math.floor(Math.random()*8)+2;
+                    p.innerHTML = `<div class="sequence-text">${s9} ➔ ${s9*s9}, ${s9+1} ➔ ?</div>`;
+                    correctAnswer = (s9+1)*(s9+1);
+                    currentExpl.ar = "الشفرة هي تربيع الرقم (ضربه في نفسه).";
+                    currentExpl.en = "The code is squaring the number.";
+                    break;
+                case 10: // نصف
+                    let ev10 = (Math.floor(Math.random()*40)+2)*2;
+                    p.innerHTML = `<div class="sequence-text">${lang === 'ar' ? 'نصف' : 'Half of'} ${ev10} = ?</div>`;
+                    correctAnswer = ev10/2;
+                    currentExpl.ar = "النصف يعني القسمة على 2.";
+                    currentExpl.en = "Half means dividing the number by 2.";
+                    break;
+                case 11: // روماني
+                    let roms = [{'s':'X','v':10}, {'s':'V','v':5}, {'s':'I','v':1}];
+                    let rIdx = Math.floor(Math.random()*2);
+                    p.innerHTML = `<div class="sequence-text">${roms[rIdx].s} + ${roms[2].s} = ?</div>`;
+                    correctAnswer = roms[rIdx].v + roms[2].v;
+                    currentExpl.ar = `منطق الأرقام الرومانية: X=10, V=5, I=1.`;
+                    currentExpl.en = `Roman numerals: X=10, V=5, I=1.`;
+                    break;
+                case 12: // نمط طرح
+                    let st12 = Math.floor(Math.random()*20)+30, dec12 = Math.floor(Math.random()*5)+2;
+                    p.innerHTML = `<div class="sequence-text">${st12}, ${st12-dec12}, ${st12-dec12*2}, ?</div>`;
+                    correctAnswer = st12-dec12*3;
+                    currentExpl.ar = `النمط هو طرح ${dec12} في كل خطوة.`;
+                    currentExpl.en = `Subtract ${dec12} at each step.`;
+                    break;
+                case 13: // نرد
+                    let t13 = Math.floor(Math.random()*6)+1;
+                    p.innerHTML = `<div class="sequence-text">Dice: Top ${t13} ➔ Bottom ?</div>`;
+                    correctAnswer = 7 - t13;
+                    currentExpl.ar = "مجموع أي وجهين متقابلين في النرد دائماً هو 7.";
+                    currentExpl.en = "Opposite sides of a dice always sum up to 7.";
+                    break;
+                case 14: // ضرب خانات
+                    let d14 = Math.floor(Math.random()*40)+11;
+                    let d_res = d14.toString().split('').reduce((a,b)=>parseInt(a)*parseInt(b),1);
+                    p.innerHTML = `<div class="sequence-text">${d14} ➔ ${d_res}</div><div class="sequence-text">${d14+2} ➔ ?</div>`;
+                    let d_t = d14 + 2;
+                    correctAnswer = d_t.toString().split('').reduce((a,b)=>parseInt(a)*parseInt(b),1);
+                    currentExpl.ar = "الشفرة هي ضرب أرقام العدد في بعضها البعض.";
+                    currentExpl.en = "The code is the product of the digits.";
+                    break;
+                case 15: // ثقوب
+                    let h_map = {"0":1,"4":1,"6":1,"8":2,"9":1,"1":0,"2":0,"3":0,"5":0,"7":0};
+                    let h_n = Math.floor(Math.random()*9).toString();
+                    p.innerHTML = `<div class="sequence-text">Logic: 0➔1, 8➔2, 4➔1</div><div class="sequence-text">${h_n} ➔ ?</div>`;
+                    correctAnswer = h_map[h_n];
+                    currentExpl.ar = "الشفرة تعتمد على عدد الدوائر المغلقة في شكل الرقم.";
+                    currentExpl.en = "The code is the number of holes in the digit.";
+                    break;
+                case 16: // رموز رياضية
+                    let symIcon = emojiList[Math.floor(Math.random()*emojiList.length)];
+                    let symVal = Math.floor(Math.random()*15)+5;
+                    p.innerHTML = `<div class="equation">${symIcon} = ${symVal}, ${symIcon}+${symIcon} = ?</div>`;
+                    correctAnswer = symVal * 2;
+                    currentExpl.ar = `بما أن الرمز يساوي ${symVal}، فمجموعه مع نفسه هو ${symVal*2}.`;
+                    currentExpl.en = `Since the symbol is ${symVal}, adding it to itself equals ${symVal*2}.`;
+                    break;
+                case 17: // قوى 2
+                    let p17 = Math.pow(2, Math.floor(Math.random()*3)+1);
+                    p.innerHTML = `<div class="sequence-text">${p17}, ${p17*2}, ${p17*4}, ?</div>`;
+                    correctAnswer = p17*8;
+                    currentExpl.ar = "النمط هو مضاعفة الرقم في كل خطوة.";
+                    currentExpl.en = "The pattern is doubling the number.";
+                    break;
+                case 18: // شهر
+                    let msNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                    let miIdx = Math.floor(Math.random()*11);
+                    p.innerHTML = `<div class="sequence-text">${msNames[miIdx]}=${miIdx+1}, ${msNames[miIdx+1]}=?</div>`;
+                    correctAnswer = miIdx+2;
+                    currentExpl.ar = `الشفرة تعتمد على ترتيب الشهر في السنة.`;
+                    currentExpl.en = `The code is the month's order in the year.`;
+                    break;
+                case 19: // آحاد الضرب
+                    let nA19 = Math.floor(Math.random()*15)+11, nB19 = Math.floor(Math.random()*15)+11;
+                    p.innerHTML = `<div class="sequence-text">${nA19} × ${nB19} ➔ Last Digit ?</div>`;
+                    correctAnswer = (nA19 * nB19) % 10;
+                    currentExpl.ar = "لمعرفة الرقم الأخير، اضرب رقمي الآحاد فقط.";
+                    currentExpl.en = "Multiply the units together to find the last digit.";
+                    break;
+                case 20: // الرقم الأوسط
+                    let midNum = Math.floor(Math.random()*800)+100;
+                    let midDigit = midNum.toString()[1];
+                    p.innerHTML = `<div class="sequence-text">${midNum} ➔ ?</div>`;
+                    correctAnswer = parseInt(midDigit);
+                    currentExpl.ar = "الشفرة هي الرقم الموجود في منتصف العدد المكون من 3 أرقام.";
+                    currentExpl.en = "The code is the middle digit of the 3-digit number.";
+                    break;
+                case 21: // فيبوناتشي
+                    let f1Val = Math.floor(Math.random()*5)+1;
+                    let f2Val = f1Val + Math.floor(Math.random()*3)+1;
+                    let f3Val = f1Val + f2Val;
+                    let f4Val = f2Val + f3Val;
+                    p.innerHTML = `<div class="sequence-text">${f1Val}, ${f2Val}, ${f3Val}, ${f4Val}, ?</div>`;
+                    correctAnswer = f3Val + f4Val;
+                    currentExpl.ar = "كل رقم هو مجموع الرقمين السابقين له مباشرة.";
+                    currentExpl.en = "Each number is the sum of the two previous ones.";
+                    break;
+                case 22: // عدد الحروف المتحركة
+                    let vwIdx = Math.floor(Math.random()*vowelWords.length);
+                    let vwObj = vowelWords[vwIdx];
+                    p.innerHTML = `<div class="sequence-text">${vwObj.w} ➔ ?</div>`;
+                    correctAnswer = vwObj.v;
+                    currentExpl.ar = "الشفرة هي عدد الحروف المتحركة (A, E, I, O, U) في الكلمة.";
+                    currentExpl.en = "The code is the number of vowels in the word.";
+                    break;
+                case 23: // فرق الأرقام
+                    let dfNum = Math.floor(Math.random()*80)+11;
+                    let df1 = parseInt(dfNum.toString()[0]), df2 = parseInt(dfNum.toString()[1]);
+                    p.innerHTML = `<div class="sequence-text">${dfNum} ➔ ${Math.abs(df1-df2)}</div><div class="sequence-text">${dfNum+2} ➔ ?</div>`;
+                    let tdf1 = parseInt((dfNum+2).toString()[0]), tdf2 = parseInt((dfNum+2).toString()[1]);
+                    correctAnswer = Math.abs(tdf1-tdf2);
+                    currentExpl.ar = "الشفرة هي ناتج طرح الرقم الأول من الثاني (أو العكس).";
+                    currentExpl.en = "The code is the difference between the two digits.";
+                    break;
+                case 24: // أيام الشهر
+                    let mDays = [{'m':'Feb','d':28}, {'m':'Apr','d':30}, {'m':'Jan','d':31}, {'m':'Nov','d':30}, {'m':'Aug','d':31}];
+                    let mDObj = mDays[Math.floor(Math.random()*mDays.length)];
+                    p.innerHTML = `<div class="sequence-text">${mDObj.m} Days ➔ ?</div>`;
+                    correctAnswer = mDObj.d;
+                    currentExpl.ar = "الشفرة هي عدد أيام هذا الشهر في السنة.";
+                    currentExpl.en = "The code is the number of days in this month.";
+                    break;
+            }
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+            resetTimer();
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            time = Math.max(100, 60 - Math.floor(score / 150));
+            document.getElementById('time').innerText = time;
+            timer = setInterval(() => {
+                if (!gamePaused) {
+                    time--;
+                    document.getElementById('time').innerText = time;
+                    if (time <= 0) {
+                        clearInterval(timer);
+                        document.getElementById('final-score').innerText = score;
+                        document.getElementById('game-over').style.display = 'flex';
+                    }
+                }
+            }, 1000);
+        }
+
+        function process() {
+            let inputRaw = document.getElementById('answer').value;
+            let input = inputRaw.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+            
+            if (input !== "" && parseInt(input) === correctAnswer) {
+                score += 20; 
+                document.getElementById('score').innerText = score;
+                gamePaused = true;
+                const lang = localStorage.getItem('yayaLang') || 'ar';
+                document.getElementById('explanation-content').innerText = currentExpl[lang];
+                document.getElementById('explEmoji').innerText = langData[lang].great;
+                document.getElementById('explanation-box').style.display = 'flex';
+                document.getElementById('game-card').style.border = "2px solid #2ecc71";
+            } else {
+                document.getElementById('answer').style.borderColor = "#f44";
+                setTimeout(() => document.getElementById('answer').style.borderColor = "#444", 500);
+                document.getElementById('answer').value = '';
+            }
+        }
+
+        function nextQuestion() {
+            gamePaused = false;
+            document.getElementById('explanation-box').style.display = 'none';
+            document.getElementById('game-card').style.border = "2px solid #333";
+            generate();
+        }
+
+        function start() {
+            score = 0; gamePaused = false; puzzleDeck = [];
+            document.getElementById('score').innerText = 0;
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('explanation-box').style.display = 'none';
+            applyLanguage(); 
+            generate();
+        }
+
+        function applyLanguage() {
+            const lang = localStorage.getItem('yayaLang') || 'ar';
+            document.getElementById('html-tag').lang = lang;
+            document.getElementById('html-tag').dir = lang === 'ar' ? 'rtl' : 'ltr';
+            const t = langData[lang];
+            document.getElementById('scoreLabel').innerText = t.score;
+            document.getElementById('targetLabel').innerText = t.target;
+            document.getElementById('submitBtn').innerText = t.submit;
+            document.getElementById('overTitle').innerText = t.over;
+            document.getElementById('finalLabel').innerText = t.final;
+            document.getElementById('retryBtn').innerText = t.retry;
+            document.getElementById('homeBtn').innerText = t.home;
+            document.getElementById('nextBtn').innerText = t.next;
+            document.getElementById('answer').placeholder = t.placeholder;
+        }
+
+        document.getElementById('answer').addEventListener('keyup', (e) => { if(e.key === 'Enter') process(); });
+        window.onload = start;
     </script>
 </body>
 </html>
