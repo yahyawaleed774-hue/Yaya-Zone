@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="html-tag">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -29,6 +29,12 @@
             min-height: 100vh;
             overflow: hidden;
             padding: 20px;
+            transition: direction 0.3s;
+        }
+
+        /* تعديل الاتجاه عند اختيار الإنجليزية */
+        html[lang="en"] body {
+            direction: ltr;
         }
 
         .coming-soon-container {
@@ -67,9 +73,9 @@
             color: #ccc;
             margin-bottom: 30px;
             line-height: 1.6;
+            min-height: 80px;
         }
 
-        /* شريط التحميل الوهمي */
         .progress-container {
             width: 100%;
             height: 10px;
@@ -81,7 +87,7 @@
         }
 
         .progress-bar {
-            width: 65%; /* نسبة التقدم الوهمية */
+            width: 65%;
             height: 100%;
             background: linear-gradient(90deg, var(--orange-dark), var(--orange));
             border-radius: 10px;
@@ -95,6 +101,7 @@
         }
 
         .back-btn {
+            background: var(--orange);
             background: linear-gradient(145deg, #ff8800, #e67700);
             color: #000;
             width: 100%;
@@ -107,7 +114,7 @@
             box-shadow: 0 5px 0 var(--orange-dark);
             text-decoration: none;
             display: inline-block;
-            transition: transform 0.1s;
+            transition: all 0.1s;
         }
 
         .back-btn:active {
@@ -127,15 +134,43 @@
 
     <div class="coming-soon-container">
         <div class="icon-box">🚀</div>
-        <h1>انتظرونا!</h1>
-        <p>استنّى تحديات جديدة هتكسّر دماغك وتختبر سرعتك في التفكير... قريب في <b>YAYA ZONE</b>!</p>        <div class="progress-container">
+        
+        <!-- النصوص مدعمة باللغتين -->
+        <h1 id="title" data-ar="انتظرونا!" data-en="Stay Tuned!">انتظرونا!</h1>
+        
+        <p id="desc" 
+           data-ar="استنّى تحديات جديدة هتكسّر دماغك وتختبر سرعتك في التفكير... قريب في YAYA ZONE!" 
+           data-en="New challenges are coming to blow your mind and test your speed... soon in YAYA ZONE!">
+           استنّى تحديات جديدة هتكسّر دماغك وتختبر سرعتك في التفكير... قريب في YAYA ZONE!
+        </p>
+
+        <div class="progress-container">
             <div class="progress-bar"></div>
         </div>
 
-        <a href="index.html" class="back-btn">العودة للرئيسية</a>
+        <a href="index.html" class="back-btn" id="backBtn" data-ar="العودة للرئيسية" data-en="Back Home">العودة للرئيسية</a>
 
-        <div class="footer-text">قريباً جداً | COMING SOON</div>
+        <div class="footer-text" id="footerText" data-ar="قريباً جداً" data-en="COMING SOON">قريباً جداً | COMING SOON</div>
     </div>
 
+    <script>
+        function applyLanguage() {
+            // جلب اللغة من المتصفح (الافتراضي عربية)
+            const lang = localStorage.getItem('yayaLang') || 'ar';
+            const html = document.getElementById('html-tag');
+
+            // تحديث لغة واتجاه الصفحة
+            html.lang = lang;
+            html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // تحديث النصوص بناءً على العناصر التي تملك data-ar و data-en
+            document.querySelectorAll('[data-ar]').forEach(el => {
+                el.innerText = el.getAttribute(`data-${lang}`);
+            });
+        }
+
+        // تشغيل الدالة فور تحميل الصفحة
+        window.onload = applyLanguage;
+    </script>
 </body>
 </html>

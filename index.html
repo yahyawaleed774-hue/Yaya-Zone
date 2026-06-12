@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="html-tag">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,23 +26,45 @@
             margin: 0;
             padding: 0;
             background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%);
+            transition: direction 0.3s ease;
         }
 
         header {
             background-color: rgba(22, 22, 22, 0.9);
-            padding: 25px;
-            text-align: center;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 3px solid #ff8800;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            border-radius: 0 0 30px 30px; /* ليونة في أطراف الهيدر */
+            border-radius: 0 0 30px 30px;
         }
 
         .logo {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 900;
             color: #ff8800;
             text-shadow: 0 0 15px rgba(255, 136, 0, 0.3);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+        }
+
+        /* زر تغيير اللغة المطور */
+        .lang-btn {
+            background: #222;
+            color: #ff8800;
+            border: 1px solid #ff8800;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: 0.2s;
+            box-shadow: 0 3px 0 #000;
+        }
+
+        .lang-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #000;
         }
 
         .hero {
@@ -58,26 +80,22 @@
 
         .hero h1 span { color: #ff8800; }
 
-        /* شبكة الألعاب */
         .games-container {
             padding: 20px;
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* موبايل */
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             max-width: 1100px;
             margin: 0 auto;
         }
 
-        /* كمبيوتر */
         @media (min-width: 992px) {
-            .games-container {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            .games-container { grid-template-columns: repeat(4, 1fr); }
         }
 
         .game-card {
             background-color: var(--card-bg);
-            border-radius: 25px; /* ليونة عالية في الزوايا */
+            border-radius: 25px;
             padding: 10px;
             border: 1px solid #252525;
             display: flex;
@@ -113,7 +131,6 @@
             justify-content: center;
         }
 
-        /* --- الزرار المظبوط (3D + ليونة) --- */
         .play-btn {
             background: var(--orange-gradient);
             color: #000;
@@ -122,15 +139,12 @@
             font-size: 15px;
             padding: 14px 0;
             display: block;
-            border-radius: 18px; /* حواف ناعمة جداً */
-            border: none;
+            border-radius: 18px;
             position: relative;
-            box-shadow: 0 5px 0px var(--orange-dark); /* العمق الـ 3D */
+            box-shadow: 0 5px 0px var(--orange-dark);
             transition: all 0.1s ease;
-            cursor: pointer;
         }
 
-        /* تأثير الضغط السلس */
         .play-btn:active {
             transform: translateY(3px);
             box-shadow: 0 2px 0px var(--orange-dark);
@@ -142,16 +156,22 @@
             color: #444;
             font-size: 14px;
         }
+
+        /* ستايل عند تغيير اللغة للإنجليزية */
+        html[lang="en"] {
+            direction: ltr;
+        }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">YAYA ZONE</div>
+        <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">English</button>
     </header>
 
     <section class="hero">
-        <h1>تحدي <span>الأذكياء</span></h1>
+        <h1 id="heroTitle">تحدي <span>الأذكياء</span></h1>
     </section>
 
     <main class="games-container">
@@ -159,8 +179,8 @@
         <div class="game-card">
             <div class="game-thumb">🧮</div>
             <div class="game-info">
-                <h3>تحدي الحساب السريع</h3>
-                <a href="calc.html" class="play-btn">العب الآن</a>
+                <h3 class="g-title" data-ar="تحدي الحساب السريع" data-en="Fast Math Challenge">تحدي الحساب السريع</h3>
+                <a href="calc.html" class="play-btn" data-ar="العب الآن" data-en="Play Now">العب الآن</a>
             </div>
         </div>
 
@@ -168,8 +188,8 @@
         <div class="game-card">
             <div class="game-thumb">➗</div>
             <div class="game-info">
-                <h3>أكمل المعادلة الناقصة</h3>
-                <a href="equation.html" class="play-btn">العب الآن</a>
+                <h3 class="g-title" data-ar="أكمل المعادلة الناقصة" data-en="Complete the Equation">أكمل المعادلة الناقصة</h3>
+                <a href="equation.html" class="play-btn" data-ar="العب الآن" data-en="Play Now">العب الآن</a>
             </div>
         </div>
 
@@ -177,8 +197,8 @@
         <div class="game-card">
             <div class="game-thumb">🔐</div>
             <div class="game-info">
-                <h3>فك الشفرات</h3>
-                <a href="decode.html" class="play-btn">العب الآن</a>
+                <h3 class="g-title" data-ar="فك الشفرات" data-en="Decoder Challenge">فك الشفرات</h3>
+                <a href="decode.html" class="play-btn" data-ar="العب الآن" data-en="Play Now">العب الآن</a>
             </div>
         </div>
 
@@ -186,16 +206,69 @@
         <div class="game-card">
             <div class="game-thumb">💡</div>
             <div class="game-info">
-                <h3>تحدي المنطق</h3>
-                <a href="logic.html" class="play-btn">العب الآن</a>
+                <h3 class="g-title" data-ar="تحدي المنطق" data-en="Logic Challenge">تحدي المنطق</h3>
+                <a href="logic.html" class="play-btn" data-ar="العب الآن" data-en="Play Now">العب الآن</a>
             </div>
         </div>
     </main>
 
     <footer>
-        YAYA ZONE &copy; 2026<br>
-        <!-- ألعاب ذكاء مصممة بدقة -->
+        <span id="footerText">YAYA ZONE &copy; 2026 - ألعاب ذكاء مصممة بدقة</span>
     </footer>
 
+    <script>
+        // النصوص المترجمة
+        const translations = {
+            ar: {
+                hero: 'تحدي <span>الأذكياء</span>',
+                langBtn: 'English',
+                footer: 'YAYA ZONE &copy; 2026 - ألعاب ذكاء مصممة بدقة'
+            },
+            en: {
+                hero: '<span>Genius</span> Challenge',
+                langBtn: 'العربية',
+                footer: 'YAYA ZONE &copy; 2026 - Precision Intelligence Games'
+            }
+        };
+
+        function toggleLanguage() {
+            // التحقق من اللغة الحالية
+            let currentLang = localStorage.getItem('yayaLang') || 'ar';
+            let newLang = currentLang === 'ar' ? 'en' : 'ar';
+            
+            // حفظ اللغة الجديدة
+            localStorage.setItem('yayaLang', newLang);
+            
+            // تطبيق اللغة
+            applyLanguage(newLang);
+        }
+
+        function applyLanguage(lang) {
+            const html = document.getElementById('html-tag');
+            const heroTitle = document.getElementById('heroTitle');
+            const langBtn = document.getElementById('langBtn');
+            const footerText = document.getElementById('footerText');
+
+            // تغيير الاتجاه واللغة في الوسم الرئيسي
+            html.lang = lang;
+            html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // تغيير النصوص العامة
+            heroTitle.innerHTML = translations[lang].hero;
+            langBtn.innerText = translations[lang].langBtn;
+            footerText.innerHTML = translations[lang].footer;
+
+            // تغيير نصوص الكروت (العناوين والأزرار)
+            document.querySelectorAll('[data-ar]').forEach(el => {
+                el.innerText = el.getAttribute(`data-${lang}`);
+            });
+        }
+
+        // عند تحميل الصفحة، نتحقق من اللغة المحفوظة
+        window.onload = () => {
+            const savedLang = localStorage.getItem('yayaLang') || 'ar';
+            applyLanguage(savedLang);
+        };
+    </script>
 </body>
 </html>

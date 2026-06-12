@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="html-tag">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YAYA ZONE | قريباً</title>
+    <title>YAYA ZONE | الرقم المفقود</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -27,74 +27,80 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
-            padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 10px;
+            transition: direction 0.3s;
         }
 
-        .coming-soon-container {
+        /* ضبط الاتجاه للإنجليزي */
+        html[lang="en"] body { direction: ltr; }
+
+        .game-container {
             background: var(--card-bg);
-            width: 100%;
+            width: 92%;
             max-width: 360px;
-            padding: 3rem 1.5rem;
+            padding: 1.5rem 1.2rem;
             border-radius: 35px;
             border: 2px solid #333;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             position: relative;
+            margin: auto;
         }
 
-        .icon-box {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        h1 {
-            color: var(--orange);
-            font-size: 2.2rem;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
             font-weight: 900;
-            margin: 0 0 10px 0;
-            text-shadow: 0 0 15px rgba(255, 123, 0, 0.3);
+            font-size: 0.95rem;
         }
 
-        p {
-            font-size: 1.1rem;
-            color: #ccc;
-            margin-bottom: 30px;
-            line-height: 1.6;
+        .timer { color: var(--orange); }
+        .score-display { background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 10px; }
+
+        .question-box {
+            font-size: clamp(1.4rem, 7vw, 2.2rem);
+            font-weight: 900;
+            margin: 1rem 0;
+            color: var(--orange);
+            direction: ltr; /* المعادلات دائماً من اليسار لليمين */
+            text-shadow: 0 0 15px rgba(255, 123, 0, 0.2);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
-        /* شريط التحميل الوهمي */
-        .progress-container {
+        .missing-box {
+            color: #fff;
+            background: rgba(255, 123, 0, 0.1);
+            border-bottom: 4px solid var(--orange);
+            padding: 0 12px;
+            min-width: 50px;
+            display: inline-block;
+            border-radius: 8px 8px 0 0;
+        }
+
+        input {
             width: 100%;
-            height: 10px;
             background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 40px;
-            border: 1px solid #333;
+            border: 2px solid #444;
+            border-radius: 18px;
+            padding: 12px;
+            color: white;
+            font-size: 1.8rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+            transition: 0.3s;
         }
 
-        .progress-bar {
-            width: 65%; /* نسبة التقدم الوهمية */
-            height: 100%;
-            background: linear-gradient(90deg, var(--orange-dark), var(--orange));
-            border-radius: 10px;
-            animation: pulse-bar 2s infinite ease-in-out;
-        }
+        input:focus { border-color: var(--orange); }
 
-        @keyframes pulse-bar {
-            0% { opacity: 0.6; box-shadow: 0 0 5px var(--orange); }
-            50% { opacity: 1; box-shadow: 0 0 15px var(--orange); }
-            100% { opacity: 0.6; box-shadow: 0 0 5px var(--orange); }
-        }
-
-        .back-btn {
+        .submit-btn {
             background: linear-gradient(145deg, #ff8800, #e67700);
             color: #000;
             width: 100%;
@@ -105,37 +111,224 @@
             border-radius: 18px;
             cursor: pointer;
             box-shadow: 0 5px 0 var(--orange-dark);
-            text-decoration: none;
-            display: inline-block;
-            transition: transform 0.1s;
         }
 
-        .back-btn:active {
+        .submit-btn:active {
             transform: translateY(3px);
             box-shadow: 0 2px 0 var(--orange-dark);
         }
 
-        .footer-text {
-            margin-top: 25px;
+        .bottom-left-action {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            background: #1a1a1a;
+            color: var(--orange);
+            border: 1.5px solid var(--orange);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: 700;
             font-size: 0.8rem;
-            color: #555;
-            letter-spacing: 1px;
+            z-index: 100;
+            cursor: pointer;
+            text-decoration: none;
         }
+        /* في الإنجليزي زر الرئيسية يروح يمين */
+        html[lang="en"] .bottom-left-action { left: auto; right: 12px; }
+
+        #game-over {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 18, 18, 0.98);
+            border-radius: 33px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .wrong-anim { animation: shake 0.4s; border-color: #ff4444 !important; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .correct-anim { animation: flash 0.4s; }
+        @keyframes flash { 50% { background: #1a3a1a; } }
     </style>
 </head>
 <body>
 
-    <div class="coming-soon-container">
-        <div class="icon-box">🚀</div>
-        <h1>انتظرونا!</h1>
-        <p>استنّى تحديات جديدة هتكسّر دماغك وتختبر سرعتك في التفكير... قريب في <b>YAYA ZONE</b>!</p>        <div class="progress-container">
-            <div class="progress-bar"></div>
+    <div class="game-container" id="game-card">
+        <div class="header">
+            <div class="score-display"><span id="scoreLabel">النقاط:</span> <span id="score">0</span></div>
+            <div class="timer">⏳ <span id="time">20</span></div>
         </div>
 
-        <a href="index.html" class="back-btn">العودة للرئيسية</a>
+        <div id="instruction" style="font-size: 0.85rem; color: #888; margin-bottom: 5px;">أوجد قيمة ( ؟ )</div>
+        <div class="question-box" id="question">--</div>
 
-        <div class="footer-text">قريباً جداً | COMING SOON</div>
+        <input type="text" id="answer" inputmode="numeric" placeholder="" autofocus>
+        
+        <button class="submit-btn" id="submitBtn" onclick="process()">تحقق</button>
+
+        <div id="game-over">
+            <h1 id="overTitle" style="color: var(--orange); font-size: 1.8rem; margin-bottom: 5px;">انتهى الوقت!</h1>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;"><span id="finalLabel">النقاط:</span> <span id="final-score" style="color: #fff; font-weight: 900;">0</span></p>
+            <button class="submit-btn" id="retryBtn" onclick="start()" style="width: 80%;">محاولة أخرى</button>
+        </div>
     </div>
 
+    <a href="index.html" class="bottom-left-action" id="homeBtn">الرئيسية</a>
+
+    <script>
+        let score = 0;
+        let time = 20;
+        let correctAnswer = 0;
+        let timer;
+
+        const qEl = document.getElementById('question');
+        const iEl = document.getElementById('answer');
+        const sEl = document.getElementById('score');
+        const tEl = document.getElementById('time');
+        const goEl = document.getElementById('game-over');
+        const cEl = document.getElementById('game-card');
+
+        const langData = {
+            ar: {
+                instruction: "أوجد قيمة ( ؟ )",
+                score: "النقاط:",
+                submit: "تحقق",
+                over: "انتهى الوقت!",
+                final: "نقاطك:",
+                retry: "محاولة أخرى",
+                home: "الرئيسية",
+                qMark: "؟"
+            },
+            en: {
+                instruction: "Find the value of ( ? )",
+                score: "Score:",
+                submit: "Check",
+                over: "Time's Up!",
+                final: "Your Score:",
+                retry: "Try Again",
+                home: "Home",
+                qMark: "?"
+            }
+        };
+
+        function applyLanguage() {
+            const lang = localStorage.getItem('yayaLang') || 'ar';
+            const html = document.getElementById('html-tag');
+            html.lang = lang;
+            html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            const t = langData[lang];
+            document.getElementById('instruction').innerText = t.instruction;
+            document.getElementById('scoreLabel').innerText = t.score;
+            document.getElementById('submitBtn').innerText = t.submit;
+            document.getElementById('overTitle').innerText = t.over;
+            document.getElementById('finalLabel').innerText = t.final;
+            document.getElementById('retryBtn').innerText = t.retry;
+            document.getElementById('homeBtn').innerText = t.home;
+        }
+
+        function convertArabicNumbers(str) {
+            const arabicDigits = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+            for (let i = 0; i < 10; i++) {
+                str = str.replace(arabicDigits[i], i);
+            }
+            return str;
+        }
+
+        function generate() {
+            const lang = localStorage.getItem('yayaLang') || 'ar';
+            const qMark = langData[lang].qMark;
+
+            const level = Math.floor(score / 60);
+            const ops = ['+', '-', '×', '÷'];
+            let op = ops[Math.floor(Math.random() * 4)];
+            
+            let n1, n2, result;
+
+            if (op === '+') {
+                n1 = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                n2 = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                result = n1 + n2;
+            } else if (op === '-') {
+                result = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                n2 = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                n1 = result + n2;
+            } else if (op === '×') {
+                n1 = Math.floor(Math.random() * (10 + level)) + 2;
+                n2 = Math.floor(Math.random() * 6) + 2;
+                result = n1 * n2;
+            } else if (op === '÷') {
+                result = Math.floor(Math.random() * (10 + level)) + 2;
+                n2 = Math.floor(Math.random() * 8) + 2;
+                n1 = result * n2;
+            }
+
+            const missingSlot = Math.random() < 0.5 ? 1 : 2;
+            
+            if (missingSlot === 1) {
+                correctAnswer = n1;
+                qEl.innerHTML = `<span class="missing-box">${qMark}</span> ${op} ${n2} = ${result}`;
+            } else {
+                correctAnswer = n2;
+                qEl.innerHTML = `${n1} ${op} <span class="missing-box">${qMark}</span> = ${result}`;
+            }
+
+            iEl.value = '';
+            iEl.focus();
+        }
+
+        function runClock() {
+            clearInterval(timer);
+            time = Math.max(7, 20 - Math.floor(score / 100));
+            tEl.innerText = time;
+            timer = setInterval(() => {
+                time--;
+                tEl.innerText = time;
+                if (time <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('final-score').innerText = score;
+                    goEl.style.display = 'flex';
+                }
+            }, 1000);
+        }
+
+        function process() {
+            let val = convertArabicNumbers(iEl.value);
+            if (val === "") return;
+            
+            if (parseInt(val) === correctAnswer) {
+                score += 10;
+                sEl.innerText = score;
+                cEl.classList.add('correct-anim');
+                setTimeout(() => cEl.classList.remove('correct-anim'), 400);
+                generate();
+                runClock();
+            } else {
+                iEl.classList.add('wrong-anim');
+                setTimeout(() => iEl.classList.remove('wrong-anim'), 400);
+                iEl.value = '';
+            }
+        }
+
+        function start() {
+            score = 0;
+            sEl.innerText = 0;
+            goEl.style.display = 'none';
+            applyLanguage();
+            generate();
+            runClock();
+        }
+
+        iEl.addEventListener('keyup', (e) => { if (e.key === 'Enter') process(); });
+        window.onload = start;
+    </script>
 </body>
 </html>
