@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAYA ZONE | ذكاء وليونة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange-gradient: linear-gradient(145deg, #ff8800, #e67700);
+            --orange-dark: #b35d00;
+            --black: #0a0a0a;
+            --card-bg: #161616;
+            --soft-white: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--soft-white);
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        header {
+            background-color: rgba(22, 22, 22, 0.9);
+            padding: 25px;
+            text-align: center;
+            border-bottom: 3px solid #ff8800;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border-radius: 0 0 30px 30px; /* ليونة في أطراف الهيدر */
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ff8800;
+            text-shadow: 0 0 15px rgba(255, 136, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .hero {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 900;
+            margin: 0;
+        }
+
+        .hero h1 span { color: #ff8800; }
+
+        /* شبكة الألعاب */
+        .games-container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* موبايل */
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* كمبيوتر */
+        @media (min-width: 992px) {
+            .games-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .game-card {
+            background-color: var(--card-bg);
+            border-radius: 25px; /* ليونة عالية في الزوايا */
+            padding: 10px;
+            border: 1px solid #252525;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .game-thumb {
+            width: 100%;
+            height: 100px;
+            background: #1f1f1f;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .game-info {
+            text-align: center;
+            padding: 5px;
+        }
+
+        .game-info h3 {
+            font-size: 15px;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            color: #fff;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- الزرار المظبوط (3D + ليونة) --- */
+        .play-btn {
+            background: var(--orange-gradient);
+            color: #000;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 15px;
+            padding: 14px 0;
+            display: block;
+            border-radius: 18px; /* حواف ناعمة جداً */
+            border: none;
+            position: relative;
+            box-shadow: 0 5px 0px var(--orange-dark); /* العمق الـ 3D */
+            transition: all 0.1s ease;
+            cursor: pointer;
+        }
+
+        /* تأثير الضغط السلس */
+        .play-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0px var(--orange-dark);
+        }
+
+        footer {
+            padding: 60px 20px;
+            text-align: center;
+            color: #444;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">YAYA ZONE</div>
+    </header>
+
+    <section class="hero">
+        <h1>تحدي <span>الأذكياء</span></h1>
+    </section>
+
+    <main class="games-container">
+        <!-- لعبة 1 -->
+        <div class="game-card">
+            <div class="game-thumb">🧮</div>
+            <div class="game-info">
+                <h3>تحدي الحساب السريع</h3>
+                <a href="calc.html" class="play-btn">العب الآن</a>
+            </div>
+        </div>
+
+        <!-- لعبة 2 -->
+        <div class="game-card">
+            <div class="game-thumb">➗</div>
+            <div class="game-info">
+                <h3>أكمل المعادلة الناقصة</h3>
+                <a href="equation.html" class="play-btn">العب الآن</a>
+            </div>
+        </div>
+
+        <!-- لعبة 3 -->
+        <div class="game-card">
+            <div class="game-thumb">🔐</div>
+            <div class="game-info">
+                <h3>فك الشفرات</h3>
+                <a href="decode.html" class="play-btn">العب الآن</a>
+            </div>
+        </div>
+
+        <!-- لعبة 4 -->
+        <div class="game-card">
+            <div class="game-thumb">💡</div>
+            <div class="game-info">
+                <h3>تحدي المنطق</h3>
+                <a href="logic.html" class="play-btn">العب الآن</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        YAYA ZONE &copy; 2026<br>
+        <!-- ألعاب ذكاء مصممة بدقة -->
+    </footer>
+
+</body>
+</html>
