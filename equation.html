@@ -30,7 +30,6 @@
             overflow-x: hidden;
             overflow-y: auto;
             padding: 10px;
-            transition: direction 0.3s;
         }
 
         html[lang="en"] body { direction: ltr; }
@@ -146,13 +145,13 @@
             z-index: 10;
         }
 
+        /* Animations */
         .wrong-anim { animation: shake 0.4s; border-color: #ff4444 !important; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-6px); }
             75% { transform: translateX(6px); }
         }
-
         .correct-anim { animation: flash 0.4s; }
         @keyframes flash { 50% { background: #1a3a1a; } }
     </style>
@@ -162,7 +161,6 @@
     <div class="game-container" id="game-card">
         <div class="header">
             <div class="score-display"><span id="scoreLabel">النقاط:</span> <span id="score">0</span></div>
-            <!-- تم التعديل هنا لظهور 50 عند البداية -->
             <div class="timer">⏳ <span id="time">50</span></div>
         </div>
 
@@ -184,9 +182,11 @@
 
     <script>
         let score = 0;
-        let time = 50; // تم تعديل الوقت الابتدائي برمجياً
+        let time = 50;
         let correctAnswer = 0;
         let timer;
+        let lastOp = ""; // لمنع تكرار العملية
+        let lastQuestionKey = ""; // لمنع تكرار السؤال
 
         const qEl = document.getElementById('question');
         const iEl = document.getElementById('answer');
@@ -226,29 +226,42 @@
             const lang = localStorage.getItem('yayaLang') || 'ar';
             const qMark = langData[lang].qMark;
             const level = Math.floor(score / 60);
+            
             const ops = ['+', '-', '×', '÷'];
-            let op = ops[Math.floor(Math.random() * 4)];
-            let n1, n2, result;
+            // تصفية القائمة لاستبعاد العملية السابقة
+            const availableOps = ops.filter(o => o !== lastOp);
+            
+            let n1, n2, result, op, missingSlot, currentKey;
 
-            if (op === '+') {
-                n1 = Math.floor(Math.random() * (20 + level * 10)) + 1;
-                n2 = Math.floor(Math.random() * (20 + level * 10)) + 1;
-                result = n1 + n2;
-            } else if (op === '-') {
-                result = Math.floor(Math.random() * (20 + level * 10)) + 1;
-                n2 = Math.floor(Math.random() * (20 + level * 10)) + 1;
-                n1 = result + n2;
-            } else if (op === '×') {
-                n1 = Math.floor(Math.random() * (10 + level)) + 2;
-                n2 = Math.floor(Math.random() * 6) + 2;
-                result = n1 * n2;
-            } else if (op === '÷') {
-                result = Math.floor(Math.random() * (10 + level)) + 2;
-                n2 = Math.floor(Math.random() * 8) + 2;
-                n1 = result * n2;
-            }
+            // حلقة تضمن عدم تكرار نفس السؤال بالضبط
+            do {
+                op = availableOps[Math.floor(Math.random() * availableOps.length)];
+                
+                if (op === '+') {
+                    n1 = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                    n2 = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                    result = n1 + n2;
+                } else if (op === '-') {
+                    result = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                    n2 = Math.floor(Math.random() * (20 + level * 10)) + 1;
+                    n1 = result + n2;
+                } else if (op === '×') {
+                    n1 = Math.floor(Math.random() * (10 + level)) + 2;
+                    n2 = Math.floor(Math.random() * 6) + 2;
+                    result = n1 * n2;
+                } else if (op === '÷') {
+                    result = Math.floor(Math.random() * (10 + level)) + 2;
+                    n2 = Math.floor(Math.random() * 8) + 2;
+                    n1 = result * n2;
+                }
 
-            const missingSlot = Math.random() < 0.5 ? 1 : 2;
+                missingSlot = Math.random() < 0.5 ? 1 : 2;
+                currentKey = `${op}-${n1}-${n2}`;
+            } while (currentKey === lastQuestionKey);
+
+            lastOp = op;
+            lastQuestionKey = currentKey;
+
             if (missingSlot === 1) {
                 correctAnswer = n1;
                 qEl.innerHTML = `<span class="missing-box">${qMark}</span> ${op} ${n2} = ${result}`;
@@ -262,7 +275,6 @@
 
         function runClock() {
             clearInterval(timer);
-            // تم تعديل المعادلة لتبدأ من 50 وتتناقص تدريجياً، بحد أدنى 10 ثوانٍ
             time = Math.max(10, 50 - Math.floor(score / 100));
             tEl.innerText = time;
             timer = setInterval(() => {
@@ -296,6 +308,8 @@
         function start() {
             score = 0;
             sEl.innerText = 0;
+            lastOp = "";
+            lastQuestionKey = "";
             goEl.style.display = 'none';
             applyLanguage();
             generate();
