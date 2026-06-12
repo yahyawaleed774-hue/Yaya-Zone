@@ -156,7 +156,7 @@
 
         <div class="puzzle-area" id="puzzle"></div>
 
-        <input type="text" id="answer" inputmode="numeric" placeholder="؟" autofocus>
+        <input type="text" id="answer" inputmode="numeric" placeholder="" autofocus>
         
         <button class="submit-btn" id="submitBtn" onclick="process()">تحقق</button>
 
@@ -189,8 +189,8 @@
         ];
 
         const langData = {
-            ar: { score: "النقاط:", target: "اكتشف الشفرة", submit: "تحقق", over: "انتهى الوقت!", final: "نقاطك:", retry: "إعادة المحاولة", home: "الرئيسية", next: "التالي", great: "🌟 رائع!", placeholder: "؟" },
-            en: { score: "Score:", target: "Solve the code", submit: "Check", over: "Time's Up!", final: "Score:", retry: "Try Again", home: "Home", next: "Next", great: "🌟 Great!", placeholder: "Answer?" }
+            ar: { score: "النقاط:", target: "اكتشف الشفرة", submit: "تحقق", over: "انتهى الوقت!", final: "نقاطك:", retry: "إعادة المحاولة", home: "الرئيسية", next: "التالي", great: "🌟 رائع!", placeholder: "" },
+            en: { score: "Score:", target: "Solve the code", submit: "Check", over: "Time's Up!", final: "Score:", retry: "Try Again", home: "Home", next: "Next", great: "🌟 Great!", placeholder: "" }
         };
 
         function shuffle(array) {
@@ -205,7 +205,6 @@
             const p = document.getElementById('puzzle'); 
             p.innerHTML = '';
             
-            // نظام الحقيبة (25 نوع)
             if (puzzleDeck.length === 0) {
                 puzzleDeck = Array.from({length: 25}, (_, i) => i);
                 shuffle(puzzleDeck);
@@ -215,27 +214,26 @@
             let type = puzzleDeck.pop();
             lastType = type;
 
-            // متغيرات عشوائية للأسئلة
             let val1 = Math.floor(Math.random() * 12) + 2;
             let val2 = Math.floor(Math.random() * 9) + 1;
             let val3 = Math.floor(Math.random() * 5) + 2;
 
             switch(type) {
-                case 0: // فواكه
+                case 0: 
                     let f1 = emojiList[Math.floor(Math.random()*10)], f2 = emojiList[Math.floor(Math.random()*10)+10];
                     p.innerHTML = `<div class="equation">${f1}+${f1}=${val1*2}</div><div class="equation">${f1}+${f2}=${val1+val2}</div><div class="equation">${f2}=?</div>`;
                     correctAnswer = val2;
                     currentExpl.ar = `بما أن مجموع ${f1} مع نفسه هو ${val1*2}، فقيمته ${val1}. إذاً ${val1} + ${f2} = ${val1+val2}، فالناتج ${val2}.`;
                     currentExpl.en = `Since ${f1}+${f1}=${val1*2}, then ${f1}=${val1}. Thus ${val1}+${f2}=${val1+val2}, so ${f2}=${val2}.`;
                     break;
-                case 1: // نمط جمع
+                case 1: 
                     let st1 = Math.floor(Math.random()*20), step1 = Math.floor(Math.random()*8)+2;
                     p.innerHTML = `<div class="sequence-text">${st1}, ${st1+step1}, ${st1+step1*2}, ?</div>`;
                     correctAnswer = st1+step1*3;
                     currentExpl.ar = `النمط هو إضافة ${step1} في كل مرة.`;
                     currentExpl.en = `The pattern is adding ${step1} at each step.`;
                     break;
-                case 2: // أضلاع
+                case 2: 
                     let shapes = [{'s':'△','v':3,'n':'Triangle','a':'المثلث'}, {'s':'□','v':4,'n':'Square','a':'المربع'}, {'s':'⬠','v':5,'n':'Pentagon','a':'الخماسي'}, {'s':'⬡','v':6,'n':'Hexagon','a':'السداسي'}];
                     shuffle(shapes);
                     p.innerHTML = `<div class="sequence-text">${shapes[0].s} + ${shapes[1].s} = ?</div>`;
@@ -243,7 +241,7 @@
                     currentExpl.ar = `نجمع أضلاع الأشكال: ${shapes[0].a}(${shapes[0].v}) + ${shapes[1].a}(${shapes[1].v}) = ${correctAnswer}.`;
                     currentExpl.en = `Sum of sides: ${shapes[0].n}(${shapes[0].v}) + ${shapes[1].n}(${shapes[1].v}) = ${correctAnswer}.`;
                     break;
-                case 3: // مرآة
+                case 3: 
                     let n3 = Math.floor(Math.random()*80)+11;
                     let rev3 = parseInt(n3.toString().split('').reverse().join(''));
                     p.innerHTML = `<div class="sequence-text">${n3} ➔ ${rev3}</div><div class="sequence-text">${n3+1} ➔ ?</div>`;
@@ -251,14 +249,14 @@
                     currentExpl.ar = "الشفرة هي عكس ترتيب الأرقام (مثل المرآة).";
                     currentExpl.en = "The code is reversing the digits.";
                     break;
-                case 4: // ضعف
+                case 4: 
                     let b4 = Math.floor(Math.random()*45)+5;
                     p.innerHTML = `<div class="sequence-text">${lang === 'ar' ? 'ضعف' : 'Double of'} ${b4} = ?</div>`;
                     correctAnswer = b4 * 2;
                     currentExpl.ar = "الضعف يعني ضرب الرقم في 2.";
                     currentExpl.en = "Double means multiplying the number by 2.";
                     break;
-                case 5: // حروف
+                case 5: 
                     let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                     let idx5 = Math.floor(Math.random()*20);
                     p.innerHTML = `<div class="sequence-text">${alpha[idx5]}=${idx5+1}, ${alpha[idx5+1]}=${idx5+2}, ${alpha[idx5+2]}=?</div>`;
@@ -266,21 +264,21 @@
                     currentExpl.ar = `تتبع الشفرة ترتيب الحروف الأبجدية الإنجليزية.`;
                     currentExpl.en = `The code follows English alphabetical order.`;
                     break;
-                case 6: // ساعة
+                case 6: 
                     let h6 = Math.floor(Math.random()*10)+1, add6 = Math.floor(Math.random()*5)+1;
                     p.innerHTML = `<div class="sequence-text">${h6}:00 + ${add6}${lang === 'ar' ? 'س' : 'h'} = ?</div>`;
                     correctAnswer = (h6 + add6) > 12 ? (h6 + add6 - 12) : (h6 + add6);
                     currentExpl.ar = `احسب الوقت بعد مرور الساعات الموضحة.`;
                     currentExpl.en = `Calculate the time after the specified hours.`;
                     break;
-                case 7: // أقواس
+                case 7: 
                     let v7_1 = Math.floor(Math.random()*10)+1, v7_2 = Math.floor(Math.random()*10)+1;
                     p.innerHTML = `<div class="equation">(${v7_1} + ${v7_2}) × 2 = ?</div>`;
                     correctAnswer = (v7_1 + v7_2) * 2;
                     currentExpl.ar = "نحل ما بداخل الأقواس أولاً ثم نضرب في 2.";
                     currentExpl.en = "Solve parentheses first, then multiply by 2.";
                     break;
-                case 8: // مجموع أرقام
+                case 8: 
                     let n8 = Math.floor(Math.random()*80)+10;
                     let sum8 = n8.toString().split('').reduce((a,b)=>parseInt(a)+parseInt(b),0);
                     p.innerHTML = `<div class="sequence-text">${n8} ➔ ${sum8}</div><div class="sequence-text">${n8+3} ➔ ?</div>`;
@@ -289,21 +287,21 @@
                     currentExpl.ar = "الشفرة هي ناتج جمع خانات الرقم الموضح.";
                     currentExpl.en = "The code is the sum of the digits of the number.";
                     break;
-                case 9: // تربيع
+                case 9: 
                     let s9 = Math.floor(Math.random()*8)+2;
                     p.innerHTML = `<div class="sequence-text">${s9} ➔ ${s9*s9}, ${s9+1} ➔ ?</div>`;
                     correctAnswer = (s9+1)*(s9+1);
                     currentExpl.ar = "الشفرة هي تربيع الرقم (ضربه في نفسه).";
                     currentExpl.en = "The code is squaring the number.";
                     break;
-                case 10: // نصف
+                case 10: 
                     let ev10 = (Math.floor(Math.random()*40)+2)*2;
                     p.innerHTML = `<div class="sequence-text">${lang === 'ar' ? 'نصف' : 'Half of'} ${ev10} = ?</div>`;
                     correctAnswer = ev10/2;
                     currentExpl.ar = "النصف يعني القسمة على 2.";
                     currentExpl.en = "Half means dividing the number by 2.";
                     break;
-                case 11: // روماني
+                case 11: 
                     let roms = [{'s':'X','v':10}, {'s':'V','v':5}, {'s':'I','v':1}];
                     let rIdx = Math.floor(Math.random()*2);
                     p.innerHTML = `<div class="sequence-text">${roms[rIdx].s} + ${roms[2].s} = ?</div>`;
@@ -311,21 +309,21 @@
                     currentExpl.ar = `منطق الأرقام الرومانية: X=10, V=5, I=1.`;
                     currentExpl.en = `Roman numerals: X=10, V=5, I=1.`;
                     break;
-                case 12: // نمط طرح
+                case 12: 
                     let st12 = Math.floor(Math.random()*20)+30, dec12 = Math.floor(Math.random()*5)+2;
                     p.innerHTML = `<div class="sequence-text">${st12}, ${st12-dec12}, ${st12-dec12*2}, ?</div>`;
                     correctAnswer = st12-dec12*3;
                     currentExpl.ar = `النمط هو طرح ${dec12} في كل خطوة.`;
                     currentExpl.en = `Subtract ${dec12} at each step.`;
                     break;
-                case 13: // نرد
+                case 13: 
                     let t13 = Math.floor(Math.random()*6)+1;
                     p.innerHTML = `<div class="sequence-text">Dice: Top ${t13} ➔ Bottom ?</div>`;
                     correctAnswer = 7 - t13;
                     currentExpl.ar = "مجموع أي وجهين متقابلين في النرد دائماً هو 7.";
                     currentExpl.en = "Opposite sides of a dice always sum up to 7.";
                     break;
-                case 14: // ضرب خانات
+                case 14: 
                     let d14 = Math.floor(Math.random()*40)+11;
                     let d_res = d14.toString().split('').reduce((a,b)=>parseInt(a)*parseInt(b),1);
                     p.innerHTML = `<div class="sequence-text">${d14} ➔ ${d_res}</div><div class="sequence-text">${d14+2} ➔ ?</div>`;
@@ -334,7 +332,7 @@
                     currentExpl.ar = "الشفرة هي ضرب أرقام العدد في بعضها البعض.";
                     currentExpl.en = "The code is the product of the digits.";
                     break;
-                case 15: // ثقوب
+                case 15: 
                     let h_map = {"0":1,"4":1,"6":1,"8":2,"9":1,"1":0,"2":0,"3":0,"5":0,"7":0};
                     let h_n = Math.floor(Math.random()*9).toString();
                     p.innerHTML = `<div class="sequence-text">Logic: 0➔1, 8➔2, 4➔1</div><div class="sequence-text">${h_n} ➔ ?</div>`;
@@ -342,7 +340,7 @@
                     currentExpl.ar = "الشفرة تعتمد على عدد الدوائر المغلقة في شكل الرقم.";
                     currentExpl.en = "The code is the number of holes in the digit.";
                     break;
-                case 16: // رموز رياضية
+                case 16: 
                     let symIcon = emojiList[Math.floor(Math.random()*emojiList.length)];
                     let symVal = Math.floor(Math.random()*15)+5;
                     p.innerHTML = `<div class="equation">${symIcon} = ${symVal}, ${symIcon}+${symIcon} = ?</div>`;
@@ -350,14 +348,14 @@
                     currentExpl.ar = `بما أن الرمز يساوي ${symVal}، فمجموعه مع نفسه هو ${symVal*2}.`;
                     currentExpl.en = `Since the symbol is ${symVal}, adding it to itself equals ${symVal*2}.`;
                     break;
-                case 17: // قوى 2
+                case 17: 
                     let p17 = Math.pow(2, Math.floor(Math.random()*3)+1);
                     p.innerHTML = `<div class="sequence-text">${p17}, ${p17*2}, ${p17*4}, ?</div>`;
                     correctAnswer = p17*8;
                     currentExpl.ar = "النمط هو مضاعفة الرقم في كل خطوة.";
                     currentExpl.en = "The pattern is doubling the number.";
                     break;
-                case 18: // شهر
+                case 18: 
                     let msNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
                     let miIdx = Math.floor(Math.random()*11);
                     p.innerHTML = `<div class="sequence-text">${msNames[miIdx]}=${miIdx+1}, ${msNames[miIdx+1]}=?</div>`;
@@ -365,14 +363,14 @@
                     currentExpl.ar = `الشفرة تعتمد على ترتيب الشهر في السنة.`;
                     currentExpl.en = `The code is the month's order in the year.`;
                     break;
-                case 19: // آحاد الضرب
+                case 19: 
                     let nA19 = Math.floor(Math.random()*15)+11, nB19 = Math.floor(Math.random()*15)+11;
                     p.innerHTML = `<div class="sequence-text">${nA19} × ${nB19} ➔ Last Digit ?</div>`;
                     correctAnswer = (nA19 * nB19) % 10;
                     currentExpl.ar = "لمعرفة الرقم الأخير، اضرب رقمي الآحاد فقط.";
                     currentExpl.en = "Multiply the units together to find the last digit.";
                     break;
-                case 20: // الرقم الأوسط
+                case 20: 
                     let midNum = Math.floor(Math.random()*800)+100;
                     let midDigit = midNum.toString()[1];
                     p.innerHTML = `<div class="sequence-text">${midNum} ➔ ?</div>`;
@@ -380,7 +378,7 @@
                     currentExpl.ar = "الشفرة هي الرقم الموجود في منتصف العدد المكون من 3 أرقام.";
                     currentExpl.en = "The code is the middle digit of the 3-digit number.";
                     break;
-                case 21: // فيبوناتشي
+                case 21: 
                     let f1Val = Math.floor(Math.random()*5)+1;
                     let f2Val = f1Val + Math.floor(Math.random()*3)+1;
                     let f3Val = f1Val + f2Val;
@@ -390,7 +388,7 @@
                     currentExpl.ar = "كل رقم هو مجموع الرقمين السابقين له مباشرة.";
                     currentExpl.en = "Each number is the sum of the two previous ones.";
                     break;
-                case 22: // عدد الحروف المتحركة
+                case 22: 
                     let vwIdx = Math.floor(Math.random()*vowelWords.length);
                     let vwObj = vowelWords[vwIdx];
                     p.innerHTML = `<div class="sequence-text">${vwObj.w} ➔ ?</div>`;
@@ -398,7 +396,7 @@
                     currentExpl.ar = "الشفرة هي عدد الحروف المتحركة (A, E, I, O, U) في الكلمة.";
                     currentExpl.en = "The code is the number of vowels in the word.";
                     break;
-                case 23: // فرق الأرقام
+                case 23: 
                     let dfNum = Math.floor(Math.random()*80)+11;
                     let df1 = parseInt(dfNum.toString()[0]), df2 = parseInt(dfNum.toString()[1]);
                     p.innerHTML = `<div class="sequence-text">${dfNum} ➔ ${Math.abs(df1-df2)}</div><div class="sequence-text">${dfNum+2} ➔ ?</div>`;
@@ -407,7 +405,7 @@
                     currentExpl.ar = "الشفرة هي ناتج طرح الرقم الأول من الثاني (أو العكس).";
                     currentExpl.en = "The code is the difference between the two digits.";
                     break;
-                case 24: // أيام الشهر
+                case 24: 
                     let mDays = [{'m':'Feb','d':28}, {'m':'Apr','d':30}, {'m':'Jan','d':31}, {'m':'Nov','d':30}, {'m':'Aug','d':31}];
                     let mDObj = mDays[Math.floor(Math.random()*mDays.length)];
                     p.innerHTML = `<div class="sequence-text">${mDObj.m} Days ➔ ?</div>`;
@@ -423,7 +421,7 @@
 
         function resetTimer() {
             clearInterval(timer);
-            time = Math.max(100, 60 - Math.floor(score / 150));
+            time = Math.max(10, 60 - Math.floor(score / 150));
             document.getElementById('time').innerText = time;
             timer = setInterval(() => {
                 if (!gamePaused) {
@@ -438,11 +436,13 @@
             }, 1000);
         }
 
+        // هذه هي الدالة التي تم تعديلها لخصم النقاط
         function process() {
             let inputRaw = document.getElementById('answer').value;
             let input = inputRaw.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
             
             if (input !== "" && parseInt(input) === correctAnswer) {
+                // إجابة صحيحة
                 score += 20; 
                 document.getElementById('score').innerText = score;
                 gamePaused = true;
@@ -452,6 +452,15 @@
                 document.getElementById('explanation-box').style.display = 'flex';
                 document.getElementById('game-card').style.border = "2px solid #2ecc71";
             } else {
+                // إجابة خاطئة - خصم نقطتين
+                if (score >= 2) {
+                    score -= 2;
+                } else {
+                    score = 0; // لمنع النقاط من أن تصبح بالسالب
+                }
+                document.getElementById('score').innerText = score;
+
+                // تأثير بصري للخطأ
                 document.getElementById('answer').style.borderColor = "#f44";
                 setTimeout(() => document.getElementById('answer').style.borderColor = "#444", 500);
                 document.getElementById('answer').value = '';

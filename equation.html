@@ -145,7 +145,6 @@
             z-index: 10;
         }
 
-        /* Animations */
         .wrong-anim { animation: shake 0.4s; border-color: #ff4444 !important; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -185,8 +184,8 @@
         let time = 50;
         let correctAnswer = 0;
         let timer;
-        let lastOp = ""; // لمنع تكرار العملية
-        let lastQuestionKey = ""; // لمنع تكرار السؤال
+        let lastOp = "";
+        let lastQuestionKey = "";
 
         const qEl = document.getElementById('question');
         const iEl = document.getElementById('answer');
@@ -228,12 +227,10 @@
             const level = Math.floor(score / 60);
             
             const ops = ['+', '-', '×', '÷'];
-            // تصفية القائمة لاستبعاد العملية السابقة
             const availableOps = ops.filter(o => o !== lastOp);
             
             let n1, n2, result, op, missingSlot, currentKey;
 
-            // حلقة تضمن عدم تكرار نفس السؤال بالضبط
             do {
                 op = availableOps[Math.floor(Math.random() * availableOps.length)];
                 
@@ -291,7 +288,9 @@
         function process() {
             let val = convertArabicNumbers(iEl.value);
             if (val === "") return;
+            
             if (parseInt(val) === correctAnswer) {
+                // إجابة صحيحة
                 score += 10;
                 sEl.innerText = score;
                 cEl.classList.add('correct-anim');
@@ -299,6 +298,14 @@
                 generate();
                 runClock();
             } else {
+                // إجابة خاطئة - خصم نقطتين
+                if (score >= 2) {
+                    score -= 2;
+                } else {
+                    score = 0; // لا ينقص عن الصفر
+                }
+                sEl.innerText = score;
+                
                 iEl.classList.add('wrong-anim');
                 setTimeout(() => iEl.classList.remove('wrong-anim'), 400);
                 iEl.value = '';

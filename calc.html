@@ -152,7 +152,6 @@
     <div class="game-container" id="game-card">
         <div class="header">
             <div class="score-display"><span id="scoreLabel">النقاط:</span> <span id="score">0</span></div>
-            <!-- تم تعديل الرقم هنا إلى 40 -->
             <div class="timer">⏳ <span id="time">40</span></div>
         </div>
 
@@ -173,7 +172,7 @@
 
     <script>
         let score = 0;
-        let time = 40; // تم تعديل البداية هنا إلى 40
+        let time = 40;
         let answer = 0;
         let timer;
         let pointsGain = 10;
@@ -249,7 +248,6 @@
 
         function runClock() {
             clearInterval(timer);
-            // تم تعديل المعادلة هنا لتبدأ من 40 وتتناقص تدريجياً مع زيادة النقاط
             time = Math.max(10, 40 - Math.floor(score / 100));
             tEl.innerText = time;
             timer = setInterval(() => {
@@ -267,6 +265,7 @@
             let inputVal = convertArabicNumbers(iEl.value);
             if (inputVal === "") return;
             if (parseInt(inputVal) === answer) {
+                // إجابة صحيحة
                 score += pointsGain;
                 sEl.innerText = score;
                 cEl.classList.add('correct-anim');
@@ -274,6 +273,15 @@
                 generate();
                 runClock();
             } else {
+                // إجابة خاطئة - خصم نقطتين
+                if (score >= 2) {
+                    score -= 2;
+                } else {
+                    score = 0; // لمنع النتيجة من أن تصبح بالسالب
+                }
+                sEl.innerText = score;
+
+                // حركات التنبيه بالخطأ
                 iEl.classList.add('wrong-anim');
                 setTimeout(() => iEl.classList.remove('wrong-anim'), 400);
                 iEl.value = '';
