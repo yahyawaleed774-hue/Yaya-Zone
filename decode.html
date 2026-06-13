@@ -140,7 +140,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 20px;
             z-index: 10;
+        }
+
+        /* تنسيق إضافي لشرح الحل عند انتهاء الوقت */
+        #timeout-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #333;
         }
     </style>
 </head>
@@ -167,8 +178,16 @@
         </div>
 
         <div id="game-over">
-            <h1 id="overTitle" style="color: var(--orange);">انتهى الوقت!</h1>
-            <p><span id="finalLabel">نقاطك:</span> <span id="final-score">0</span></p>
+            <h1 id="overTitle" style="color: var(--orange); margin-bottom: 5px;">انتهى الوقت!</h1>
+            
+            <!-- هذا الجزء الجديد الذي يعرض الحل عند انتهاء الوقت -->
+            <div id="timeout-info">
+                <div style="font-size: 0.9rem; color: #888;" id="wasLabel">الحل الصحيح هو:</div>
+                <div id="correct-ans-display" style="font-size: 1.8rem; color: var(--orange); font-weight: 900;">0</div>
+                <div id="timeout-expl-text" style="font-size: 0.85rem; margin-top: 5px; line-height: 1.4;"></div>
+            </div>
+
+            <p style="margin: 10px 0;"><span id="finalLabel">نقاطك:</span> <span id="final-score">0</span></p>
             <button class="submit-btn" id="retryBtn" onclick="start()" style="width: 80%;">إعادة المحاولة</button>
         </div>
     </div>
@@ -189,8 +208,8 @@
         ];
 
         const langData = {
-            ar: { score: "النقاط:", target: "اكتشف الشفرة", submit: "تحقق", over: "انتهى الوقت!", final: "نقاطك:", retry: "إعادة المحاولة", home: "الرئيسية", next: "التالي", great: "🌟 رائع!", placeholder: "" },
-            en: { score: "Score:", target: "Solve the code", submit: "Check", over: "Time's Up!", final: "Score:", retry: "Try Again", home: "Home", next: "Next", great: "🌟 Great!", placeholder: "" }
+            ar: { score: "النقاط:", target: "اكتشف الشفرة", submit: "تحقق", over: "انتهى الوقت!", final: "نقاطك:", retry: "إعادة المحاولة", home: "الرئيسية", next: "التالي", great: "🌟 رائع!", placeholder: "", was: "الحل الصحيح كان:" },
+            en: { score: "Score:", target: "Solve the code", submit: "Check", over: "Time's Up!", final: "Score:", retry: "Try Again", home: "Home", next: "Next", great: "🌟 Great!", placeholder: "", was: "Correct answer was:" }
         };
 
         function shuffle(array) {
@@ -429,20 +448,24 @@
                     document.getElementById('time').innerText = time;
                     if (time <= 0) {
                         clearInterval(timer);
+                        const lang = localStorage.getItem('yayaLang') || 'ar';
+                        
+                        // إضافة بيانات الحل عند انتهاء الوقت
+                        document.getElementById('correct-ans-display').innerText = correctAnswer;
+                        document.getElementById('timeout-expl-text').innerText = currentExpl[lang];
                         document.getElementById('final-score').innerText = score;
+                        
                         document.getElementById('game-over').style.display = 'flex';
                     }
                 }
             }, 1000);
         }
 
-        // هذه هي الدالة التي تم تعديلها لخصم النقاط
         function process() {
             let inputRaw = document.getElementById('answer').value;
             let input = inputRaw.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
             
             if (input !== "" && parseInt(input) === correctAnswer) {
-                // إجابة صحيحة
                 score += 20; 
                 document.getElementById('score').innerText = score;
                 gamePaused = true;
@@ -452,15 +475,12 @@
                 document.getElementById('explanation-box').style.display = 'flex';
                 document.getElementById('game-card').style.border = "2px solid #2ecc71";
             } else {
-                // إجابة خاطئة - خصم نقطتين
                 if (score >= 2) {
                     score -= 2;
                 } else {
-                    score = 0; // لمنع النقاط من أن تصبح بالسالب
+                    score = 0;
                 }
                 document.getElementById('score').innerText = score;
-
-                // تأثير بصري للخطأ
                 document.getElementById('answer').style.borderColor = "#f44";
                 setTimeout(() => document.getElementById('answer').style.borderColor = "#444", 500);
                 document.getElementById('answer').value = '';
@@ -496,6 +516,7 @@
             document.getElementById('retryBtn').innerText = t.retry;
             document.getElementById('homeBtn').innerText = t.home;
             document.getElementById('nextBtn').innerText = t.next;
+            document.getElementById('wasLabel').innerText = t.was; // ترجمة كلمة "الحل الصحيح كان"
             document.getElementById('answer').placeholder = t.placeholder;
         }
 
