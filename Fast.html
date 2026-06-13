@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-tag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YAYA ZONE | فكر بسرعة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #ff7b00;
+            --orange-dark: #b35d00;
+            --black: #0a0a0a;
+            --card-bg: #161616;
+            --green: #2ecc71;
+            --red: #e74c3c;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            background-color: var(--black);
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 360px;
+            padding: 1.5rem 1.2rem;
+            border-radius: 35px;
+            border: 2px solid #333;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-weight: 900;
+        }
+
+        .timer { color: var(--orange); }
+        .score-display { background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 10px; }
+
+        .question-box {
+            font-size: clamp(1rem, 4.5vw, 1.3rem);
+            font-weight: 700;
+            margin: 1rem 0;
+            color: #fff;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.5;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 15px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            color: #000;
+            border: none;
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            border-radius: 18px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: 0.2s;
+        }
+
+        .btn-true { background: var(--green); box-shadow: 0 5px 0 #27ae60; }
+        .btn-false { background: var(--red); box-shadow: 0 5px 0 #c0392b; }
+
+        .choice-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.5); }
+
+        #game-over {
+            display: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            border-radius: 33px; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10;
+        }
+
+        .retry-btn {
+            background: var(--orange);
+            color: #000;
+            width: 80%;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            border-radius: 18px;
+            box-shadow: 0 5px 0 var(--orange-dark);
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .bottom-left-action {
+            position: fixed; bottom: 12px; left: 12px;
+            background: #1a1a1a; color: var(--orange);
+            border: 1.5px solid var(--orange);
+            padding: 8px 15px; border-radius: 10px;
+            font-weight: 700; text-decoration: none; font-size: 0.8rem;
+        }
+        html[lang="en"] .bottom-left-action { left: auto; right: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="game-card">
+        <div class="header">
+            <div class="score-display"><span id="scoreLabel">النقاط:</span> <span id="score">0</span></div>
+            <div class="timer">⏳ <span id="time">15</span></div>
+        </div>
+
+        <div id="instruction" style="font-size: 0.85rem; color: var(--orange); margin-bottom: 5px; font-weight: 700;">فكر بسرعة.. حقيقة أم كذبة؟</div>
+        
+        <div class="question-box" id="question">...</div>
+
+        <div class="options-grid">
+            <button class="choice-btn btn-true" id="trueLabel" onclick="check(true)">حقيقة</button>
+            <button class="choice-btn btn-false" id="falseLabel" onclick="check(false)">كذبة</button>
+        </div>
+
+        <div id="game-over">
+            <h1 id="overTitle" style="color: var(--red);">خسرت!</h1>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;"><span id="finalLabel">نقاطك:</span> <span id="final-score" style="color: #fff; font-weight: 900;">0</span></p>
+            <button class="retry-btn" id="retryBtn" onclick="start()">إعادة المحاولة</button>
+        </div>
+    </div>
+
+    <a href="index.html" class="bottom-left-action" id="homeBtn">الرئيسية</a>
+
+    <script>
+        const database = {
+    ar: [
+        // --- مجموعة 1: طبيعة وحيوانات ---
+        { q: "قلب الروبيان يقع في رأسه.", a: true },
+        { q: "الحلزون يمكنه النوم لثلاث سنوات.", a: true },
+        { q: "القرش لديه عظام حقيقية.", a: false },
+        { q: "الفئران لا يمكنها التقيؤ.", a: true },
+        { q: "الخفاش هو الثدي الوحيد الذي يطير.", a: true },
+        { q: "التماسيح تخرج لسانها من فمها.", a: false },
+        { q: "لون عرق فرس النهر أحمر.", a: true },
+        { q: "نجم البحر لديه دماغ.", a: false },
+        { q: "الزرافة تنام أقل من ساعتين يومياً.", a: true },
+        { q: "الأفاعي تسمع عبر آذان خارجية.", a: false },
+        { q: "النحل لديه 5 عيون.", a: true },
+        { q: "الكلاب ترى الألوان مثل البشر.", a: false },
+        { q: "القطط لديها 32 عضلة في كل أذن.", a: true },
+        { q: "الفراشة تتذوق بأقدامها.", a: true },
+        { q: "عمر الذبابة يوم واحد فقط.", a: false },
+        { q: "الأسماك لا تغمض أعينها أبداً.", a: true },
+        { q: "دم الأخطبوط أزرق.", a: true },
+        { q: "الكنغر لا يستطيع المشي للخلف.", a: true },
+        { q: "الحوت الأزرق أكبر كائن على الأرض.", a: true },
+        { q: "الباندا تنتمي لفصيلة الراكون.", a: false },
+        // --- مجموعة 2: جسم الإنسان ---
+        { q: "الجلد هو أكبر عضو في جسم الإنسان.", a: true },
+        { q: "الإنسان لديه 206 عظمة عند البلوغ.", a: true },
+        { q: "الأطفال لديهم عظام أقل من البالغين.", a: false },
+        { q: "اللسان هو أقوى عضلة بالنسبة لحجمها.", a: true },
+        { q: "الرئة اليسرى أصغر من اليمنى.", a: true },
+        { q: "الدم يشكل 8% من وزن الجسم.", a: true },
+        { q: "القلب يضخ الدم للرئتين فقط.", a: false },
+        { q: "الأذن والأنف لا يتوقفان عن النمو.", a: true },
+        { q: "الإنسان يستخدم 10% من دماغه.", a: false },
+        { q: "الأسنان لا ترمم نفسها أبداً.", a: true },
+        { q: "العين البشرية يمكنها تمييز 10 ملايين لون.", a: true },
+        { q: "عدد الحواس 5 حواس فقط.", a: false },
+        { q: "أصغر عظمة بالجسم في الأذن.", a: true },
+        { q: "بصمات الأصابع فريدة لكل إنسان.", a: true },
+        { q: "الدماغ البشري يستهلك 20% من الأكسجين.", a: true },
+        { q: "الكبد يمكنه تجديد نفسه.", a: true },
+        { q: "العطسة تسير بسرعة 160 كم/ساعة.", a: true },
+        { q: "أظافر اليد تنمو أسرع من القدم.", a: true },
+        { q: "شعر الإنسان يستمر بالنمو بعد الموت.", a: false },
+        { q: "الإنسان يرمش 15 مرة في الدقيقة.", a: true },
+        // --- مجموعة 3: فضاء وعلم ---
+        { q: "الشمس لونها الحقيقي أبيض.", a: true },
+        { q: "يوم الزهرة أطول من سنتها.", a: true },
+        { q: "بلوتو كوكب رئيسي في المجموعة.", a: false },
+        { q: "الماس يسقط كأمطار في كوكب زحل.", a: true },
+        { q: "الصوت ينتقل في الفضاء.", a: false },
+        { q: "المشتري كوكب غازي بلا سطح صلب.", a: true },
+        { q: "الجاذبية على القمر تساوي الجاذبية على الأرض.", a: false },
+        { q: "الضوء أسرع من الصوت.", a: true },
+        { q: "الذهب ينجذب للمغناطيس.", a: false },
+        { q: "الماء يتجمد عند الصفر المئوي.", a: true },
+        { q: "البرق أحر من سطح الشمس.", a: true },
+        { q: "الأرض كروية تماماً.", a: false },
+        { q: "المحيط الهادئ أكبر محيط بالعالم.", a: true },
+        { q: "الصين أول من استخدم العملات الورقية.", a: true },
+        { q: "الماء الساخن يتجمد أسرع من البارد.", a: true },
+        { q: "النيتروجين يشكل أغلب هواء الأرض.", a: true },
+        { q: "الحديد يطفو فوق الماء.", a: false },
+        { q: "الساعة بها 3600 ثانية.", a: true },
+        { q: "الماس مصنوع من الفحم.", a: false }, // من الكربون
+        { q: "القمر يضيء من تلقاء نفسه.", a: false },
+        // --- مجموعة 4: جغرافيا وتاريخ ---
+        { q: "روسيا مساحتها أكبر من بلوتو.", a: true },
+        { q: "دمشق أقدم عاصمة في التاريخ.", a: true },
+        { q: "كندا تمتلك أطول سواحل في العالم.", a: true },
+        { q: "البرازيل تقع في أفريقيا.", a: false },
+        { q: "سور الصين العظيم يرى من القمر.", a: false },
+        { q: "الأهرامات بنيت بالخرسانة الحديثة.", a: false },
+        { q: "مصر تقع في قارتين.", a: true },
+        { q: "سويسرا ليس لها عاصمة رسمية.", a: true },
+        { q: "خط الاستواء يمر بلندن.", a: false },
+        { q: "الفاتيكان أصغر دولة بالعالم.", a: true },
+        { q: "نهر النيل أطول نهر بالعالم.", a: true },
+        { q: "نيويورك عاصمة أمريكا.", a: false },
+        { q: "اليابان تسمى بلاد الشمس المشرقة.", a: true },
+        { q: "برج إيفل يطول في الصيف.", a: true },
+        { q: "القارة القطبية الجنوبية أكبر صحراء بالعالم.", a: true },
+        { q: "أستراليا هي قارة وجزيرة بنفس الوقت.", a: true },
+        { q: "البحر الميت فيه أسماك كثيرة.", a: false },
+        { q: "تيتانيك غرقت في المحيط الهندي.", a: false },
+        { q: "الصين أكثر دول العالم سكاناً دائماً.", a: false }, // الهند تجاوزتها
+        { q: "موناكو مساحتها أصغر من سنترال بارك.", a: true },
+        // --- مجموعة 5: معلومات عامة ومنوعة ---
+        { q: "الموز يعتبر أعشاب وليس شجر.", a: true },
+        { q: "العسل لا يفسد أبداً.", a: true },
+        { q: "الفول السوداني من المكسرات.", a: false },
+        { q: "الطماطم فاكهة وليست خضار.", a: true },
+        { q: "نيوتن اكتشف الجاذبية عبر تفاحة.", a: true },
+        { q: "كوكاكولا كان لونها أخضر.", a: false },
+        { q: "لعبة الشطرنج أصلها من الهند.", a: true },
+        { q: "الرقم صفر اخترعه العرب والهنود.", a: true },
+        { q: "فريق كرة القدم به 12 لاعب.", a: false },
+        { q: "الماس أقسى مادة طبيعية.", a: true },
+        { q: "البرتقال سمي على اسم اللون.", a: false },
+        { q: "القهوة تزرع في إيطاليا.", a: false },
+        { q: "أديسون اخترع المصباح.", a: true },
+        { q: "فيتامين الشمس هو فيتامين D.", a: true },
+        { q: "الذهب يصدأ.", a: false },
+        { q: "نابليون كان شديد القصر.", a: false },
+        { q: "المنبه اخترع قبل الساعة الرقمية.", a: true },
+        { q: "الورق يصنع من الخشب.", a: true },
+        { q: "الإنترنت هو نفسه الويب.", a: false },
+        { q: "الأسد يعيش في غابات الأمازون.", a: false },
+        // --- تابع مجموعة العربية (الدفعة الأخيرة) ---
+        { q: "الجزر كان لونه أرجوانياً في الأصل قبل القرن الـ17.", a: true },
+        { q: "البطاريق تعيش في القطب الشمالي.", a: false }, // تعيش في القطب الجنوبي
+        { q: "الثيران تغضب من اللون الأحمر.", a: false }, // الثور مصاب بعمى الألوان ويتحرك بسبب حركة القماش
+        { q: "السلاحف البحرية تبكي للتخلص من الملح الزائد.", a: true },
+        { q: "الحصان يمكنه النوم واقفا.", a: true },
+        { q: "لغة الصين الرسمية هي الماندرين.", a: true },
+        { q: "أكبر دولة في العالم من حيث المساحة هي كندا.", a: false }, // روسيا
+        { q: "اليونان استضافت أولمبياد 2004.", a: true },
+        { q: "الفراشة تعيش لمدة عام كامل.", a: false },
+        { q: "الشمس أكبر من الأرض بمليون مرة.", a: true },
+        { q: "الإنسان البالغ لديه 32 سناً.", a: true },
+        { q: "الدلافين تنام بعين واحدة مفتوحة.", a: true },
+        { q: "القرش ليس لديه حراشف.", a: false },
+        { q: "كوكب الزهرة يدور باتجاه عكس عقارب الساعة.", a: true },
+        { q: "الأسد هو أسرع حيوان بري.", a: false }, // الفهد
+        { q: "عضلة القلب هي العضلة الوحيدة التي لا تتعب.", a: true },
+        { q: "نهر الأمازون يقع في أمريكا الشمالية.", a: false }, // الجنوبية
+        { q: "الهيليوم أخف من الهواء.", a: true },
+        { q: "غاز الأكسجين له رائحة نفاذة.", a: false },
+        { q: "لندن تقع على نهر التايمز.", a: true },
+        { q: "ميسي ولد في البرازيل.", a: false }, // الأرجنتين
+        { q: "كريستيانو رونالدو برتغالي الجنسية.", a: true },
+        { q: "كأس العالم يقام كل 5 سنوات.", a: false }, // 4 سنوات
+        { q: "الذهب يذوب في درجة حرارة الغرفة.", a: false },
+        { q: "الألماس يتكون من ذرات الكربون.", a: true },
+        { q: "القطب الجنوبي أبرد من القطب الشمالي.", a: true },
+        { q: "البرق يضرب الأرض 100 مرة كل ثانية.", a: true },
+        { q: "الفيل هو الحيوان الوحيد الذي لا يستطيع القفز.", a: true },
+        { q: "المحيط الأطلسي أصغر من المحيط الهادئ.", a: true },
+        { q: "طوكيو هي عاصمة اليابان.", a: true },
+        { q: "مخترع الهاتف هو ألكسندر جراهام بيل.", a: true },
+        { q: "الدم البشري يحتوي على الحديد.", a: true },
+        { q: "الفراولة تنتمي لفصيلة الورد.", a: true },
+        { q: "البصل يقلل من نسبة السكر في الدم.", a: true },
+        { q: "الحوت الأزرق قلبه بحجم سيارة صغيرة.", a: true },
+        { q: "النعام يدفن رأسه في الرمل خوفاً.", a: false },
+        { q: "النسر يعيش أكثر من 70 عاماً.", a: true },
+        { q: "الماء يشكل 70% من مساحة الأرض.", a: true },
+        { q: "أطول برج في العالم هو برج خليفة.", a: true },
+        { q: "البطاطس أصلها من إيرلندا.", a: false }, // البيرو (أمريكا الجنوبية)
+        { q: "القطط لا تستطيع تذوق الحلويات.", a: true },
+        { q: "القمر يدور حول نفسه.", a: true },
+        { q: "البرتقال يحتوي على فيتامين C.", a: true },
+        { q: "الجراد يمتلك آذاناً في بطنه.", a: true },
+        { q: "الأخطبوط له 3 قلوب.", a: true },
+        { q: "الزرافة ليس لها صوت.", a: false },
+        { q: "البعوض ينجذب للملابس الداكنة.", a: true },
+        { q: "عمر السلحفاة قد يتجاوز 150 عاماً.", a: true },
+        { q: "جبل إيفرست يقع في أفريقيا.", a: false }, // آسيا
+        { q: "إيطاليا فازت بكأس العالم 4 مرات.", a: true },
+        // --- الدفعة الرابعة (50 سؤال إضافي) ---
+        { q: "العنكبوت يعتبر من فصيلة الحشرات.", a: false }, // من العنكبوتيات (لديه 8 أرجل)
+        { q: "كوكب الزهرة هو الكوكب الوحيد الذي يدور مع عقارب الساعة.", a: true },
+        { q: "الفهد الصياد (Cheetah) يمكنه الوصول لسرعة 120 كم/ساعة.", a: true },
+        { q: "شجر الموز ينمو للأعلى وليس للأسفل.", a: true },
+        { q: "البرق يمكنه تسخين الهواء حوله لدرجة حرارة تفوق سطح الشمس.", a: true },
+        { q: "السحب يمكن أن تزن أكثر من مليون رطل (حوالي 500 طن).", a: true },
+        { q: "الإنسان يمتلك بصمة لسان فريدة تماماً مثل بصمة الإصبع.", a: true },
+        { q: "أسنان الإنسان بقوة أسنان سمك القرش.", a: true },
+        { q: "عطارد هو أحر كوكب في المجموعة الشمسية.", a: false }, // الزهرة أحر منه بسبب غلافها الجوي
+        { q: "الماس يمكن أن يذوب إذا وضع في حمض قوي جداً.", a: false }, // الماس لا يذوب بالأحماض بل يحترق بالأكسجين
+        { q: "كوكاكولا كانت تحتوي على الكوكايين كعلاج في بدايتها.", a: true },
+        { q: "أطول رحلة طيران للدجاجة مسجلة كانت 13 ثانية فقط.", a: true },
+        { q: "رواد الفضاء يزداد طولهم بنسبة 3% أثناء وجودهم في الفضاء.", a: true },
+        { q: "الزرافة لديها نفس عدد عظام الرقبة الموجودة في الإنسان (7 عظام).", a: true },
+        { q: "الفراشات تشم الزهور باستخدام أجنحتها.", a: false }, // تتذوق بأقدامها
+        { q: "الماء الساخن يتحول إلى جليد أسرع من الماء البارد.", a: true },
+        { q: "أول فيلم رسوم متحركة في التاريخ كان من إنتاج شركة ديزني.", a: false }, // هناك أفلام أقدم
+        { q: "الذهب يذوب إذا وضع في الزئبق.", a: true },
+        { q: "البعوض يفضل لدغ الأشخاص الذين أكلوا الموز للتو.", a: true },
+        { q: "قلب الإنسان ينبض حوالي 2.5 مليار مرة خلال عمره المتوسط.", a: true },
+        { q: "السلاحف يمكنها التنفس من خلال فتحة الشرج في الشتاء.", a: true },
+        { q: "النحل يمكنه تمييز وجوه البشر.", a: true },
+        { q: "المحيط الهندي هو أعمق محيط في العالم.", a: false }, // الهادئ هو الأعمق
+        { q: "كندا هي الدولة التي تمتلك أطول حدود برية مع أمريكا.", a: true },
+        { q: "الديناصورات كانت موجودة عندما بنيت الأهرامات.", a: false },
+        { q: "ليوناردو دا فينشي هو من رسم لوحة (العشاء الأخير).", a: true },
+        { q: "غاز ثاني أكسيد الكربون ضروري لعملية التنفس البشري.", a: false }, // الأكسجين هو الضروري
+        { q: "رقم 13 يعتبر رقم نحس في كثير من الثقافات الغربية.", a: true },
+        { q: "الزرافة يمكنها تنظيف أذنيها بلسانها الطويل.", a: true },
+        { q: "أول مكالمة هاتفية عبر الموبايل كانت في عام 1973.", a: true },
+        { q: "الأسماك الذهبية لديها ذاكرة تدوم لـ 3 ثوانٍ فقط.", a: false }, // ذاكرتها تدوم لشهور
+        { q: "الأرض هي الكوكب الوحيد الذي لم يسمى على اسم إله يوناني أو روماني.", a: true },
+        { q: "مخترع لغة البرمجة (Python) هو هولندي الجنسية.", a: true },
+        { q: "كوكب أورانوس يميل بشدة لدرجة أنه يدور على جنبه.", a: true },
+        { q: "المعدة البشرية يمكنها إذابة شفرات الحلاقة بسبب قوة أحماضها.", a: true },
+        { q: "فرن الميكروويف تم اختراعه بالصدفة أثناء تجارب الرادار.", a: true },
+        { q: "أطول كلمة في اللغة العربية تتكون من 15 حرفاً.", a: true }, // فأسقيناكموه
+        { q: "الزيت يغلي عند درجة حرارة أقل من الماء.", a: false }, // يغلي عند درجة أعلى بكثير
+        { q: "طول الأوعية الدموية في جسم الإنسان يكفي للدوران حول الأرض مرتين.", a: true },
+        { q: "سرعة الصوت في الماء أسرع منها في الهواء.", a: true },
+        { q: "النسر الذهبي يمكنه رؤية أرنب من مسافة 3 كيلومترات.", a: true },
+        { q: "الأخطبوط يموت بعد وقت قصير من ولادة صغاره.", a: true },
+        { q: "الهند هي أكثر دولة في العالم استهلاكاً للأرز.", a: false }, // الصين هي الأكثر
+        { q: "البرتقال لا ينمو في المناطق الاستوائية بشكل طبيعي.", a: true },
+        { q: "اليابان تتكون من 4 جزر رئيسية فقط.", a: false }, // تتكون من آلاف الجزر
+        { q: "الصوت لا يمكنه الانتقال عبر الفراغ.", a: true },
+        { q: "الخشب لا يوصل الكهرباء أبداً حتى لو كان مبللاً.", a: false }, // الماء يوصل الكهرباء
+        { q: "الرئة اليمنى للإنسان تستوعب هواء أكثر من الرئة اليسرى.", a: true },
+        { q: "البصمات لا تتغير أبداً منذ الولادة وحتى الوفاة.", a: true },
+        { q: "نجم البحر لا يمتلك دماً في جسمه.", a: true }
+    ],
+    en: [
+        // --- Group 1: Nature & Animals ---
+        { q: "A shrimp's heart is in its head.", a: true },
+        { q: "Snails can sleep for 3 years.", a: true },
+        { q: "Sharks have real bones.", a: false },
+        { q: "Rats cannot vomit.", a: true },
+        { q: "Bats are the only flying mammals.", a: true },
+        { q: "Crocodiles stick their tongues out.", a: false },
+        { q: "Hippo sweat is red.", a: true },
+        { q: "Starfish have brains.", a: false },
+        { q: "Giraffes sleep less than 2 hours a day.", a: true },
+        { q: "Snakes hear with external ears.", a: false },
+        { q: "Bees have 5 eyes.", a: true },
+        { q: "Dogs see colors like humans.", a: false },
+        { q: "Cats have 32 muscles in each ear.", a: true },
+        { q: "Butterflies taste with their feet.", a: true },
+        { q: "A fly lives for only one day.", a: false },
+        { q: "Fish never close their eyes.", a: true },
+        { q: "Octopus blood is blue.", a: true },
+        { q: "Kangaroos cannot walk backwards.", a: true },
+        { q: "Blue whales are the largest animals.", a: true },
+        { q: "Pandas belong to the raccoon family.", a: false },
+        // --- Group 2: Human Body ---
+        { q: "Skin is the largest organ.", a: true },
+        { q: "Adults have 206 bones.", a: true },
+        { q: "Babies have fewer bones than adults.", a: false },
+        { q: "The tongue is the strongest muscle for its size.", a: true },
+        { q: "The left lung is smaller than the right.", a: true },
+        { q: "Blood is 8% of body weight.", a: true },
+        { q: "The heart pumps blood only to lungs.", a: false },
+        { q: "Ears and nose never stop growing.", a: true },
+        { q: "Humans use 10% of their brains.", a: false },
+        { q: "Teeth cannot repair themselves.", a: true },
+        { q: "The human eye sees 10 million colors.", a: true },
+        { q: "There are only 5 senses.", a: false },
+        { q: "Smallest bone is in the ear.", a: true },
+        { q: "Fingerprints are unique to everyone.", a: true },
+        { q: "The brain uses 20% of oxygen.", a: true },
+        { q: "The liver can regenerate itself.", a: true },
+        { q: "A sneeze travels at 160 km/h.", a: true },
+        { q: "Fingernails grow faster than toenails.", a: true },
+        { q: "Hair grows after death.", a: false },
+        { q: "Humans blink 15 times a minute.", a: true },
+        // --- Group 3: Space & Science ---
+        { q: "The sun's true color is white.", a: true },
+        { q: "Venus's day is longer than its year.", a: true },
+        { q: "Pluto is a major planet.", a: false },
+        { q: "It rains diamonds on Saturn.", a: true },
+        { q: "Sound travels in space.", a: false },
+        { q: "Jupiter has no solid surface.", a: true },
+        { q: "Moon gravity equals Earth gravity.", a: false },
+        { q: "Light is faster than sound.", a: true },
+        { q: "Gold is attracted to magnets.", a: false },
+        { q: "Water freezes at 0 degrees Celsius.", a: true },
+        { q: "Lightning is hotter than the sun.", a: true },
+        { q: "Earth is a perfect sphere.", a: false },
+        { q: "Pacific Ocean is the largest ocean.", a: true },
+        { q: "China first used paper money.", a: true },
+        { q: "Hot water freezes faster than cold.", a: true },
+        { q: "Nitrogen is the main gas in air.", a: true },
+        { q: "Iron floats on water.", a: false },
+        { q: "An hour has 3600 seconds.", a: true },
+        { q: "Diamonds are made from coal.", a: false },
+        { q: "The moon shines on its own.", a: false },
+        // --- Group 4: Geography & History ---
+        { q: "Russia is larger than Pluto.", a: true },
+        { q: "Damascus is the oldest capital.", a: true },
+        { q: "Canada has the longest coastline.", a: true },
+        { q: "Brazil is in Africa.", a: false },
+        { q: "The Great Wall is visible from the Moon.", a: false },
+        { q: "Pyramids were built with modern concrete.", a: false },
+        { q: "Egypt is located in two continents.", a: true },
+        { q: "Switzerland has no official capital.", a: true },
+        { q: "The Equator passes through London.", a: false },
+        { q: "Vatican is the smallest country.", a: true },
+        { q: "The Nile is the longest river.", a: true },
+        { q: "New York is the capital of USA.", a: false },
+        { q: "Japan is the Land of Rising Sun.", a: true },
+        { q: "Eiffel Tower grows in summer.", a: true },
+        { q: "Antarctica is the largest desert.", a: true },
+        { q: "Australia is a continent and island.", a: true },
+        { q: "Dead Sea has many fish.", a: false },
+        { q: "Titanic sank in Indian Ocean.", a: false },
+        { q: "China is always the most populated.", a: false },
+        { q: "Monaco is smaller than Central Park.", a: true },
+        // --- Group 5: General Knowledge ---
+        { q: "Bananas are herbs, not trees.", a: true },
+        { q: "Honey never spoils.", a: true },
+        { q: "Peanuts are a type of nut.", a: false },
+        { q: "Tomatoes are fruits, not vegetables.", a: true },
+        { q: "Newton discovered gravity via apple.", a: true },
+        { q: "Coca-Cola was originally green.", a: false },
+        { q: "Chess originated in India.", a: true },
+        { q: "Zero was invented by Arabs and Indians.", a: true },
+        { q: "Football team has 12 players.", a: false },
+        { q: "Diamond is the hardest material.", a: true },
+        { q: "Oranges were named after the color.", a: false },
+        { q: "Coffee is grown in Italy.", a: false },
+        { q: "Edison invented the light bulb.", a: true },
+        { q: "Sun vitamin is Vitamin D.", a: true },
+        { q: "Gold rusts.", a: false },
+        { q: "Napoleon was extremely short.", a: false },
+        { q: "Alarm clock was invented before digital.", a: true },
+        { q: "Paper is made from wood.", a: true },
+        { q: "Internet is the same as the Web.", a: false },
+        { q: "Lions live in the Amazon.", a: false },
+        // --- Follow-up English Group (Final Batch) ---
+        { q: "Carrots were originally purple before the 17th century.", a: true },
+        { q: "Penguins live in the North Pole.", a: false },
+        { q: "Bulls get angry at the color red.", a: false },
+        { q: "Sea turtles cry to get rid of excess salt.", a: true },
+        { q: "Horses can sleep while standing.", a: true },
+        { q: "Mandarin is the official language of China.", a: true },
+        { q: "Russia is the largest country by area.", a: true },
+        { q: "Greece hosted the 2004 Olympics.", a: true },
+        { q: "Butterflies live for an entire year.", a: false },
+        { q: "The Sun is a million times larger than Earth.", a: true },
+        { q: "An adult human has 32 teeth.", a: true },
+        { q: "Dolphins sleep with one eye open.", a: true },
+        { q: "Sharks have no scales.", a: false },
+        { q: "Venus rotates clockwise.", a: true },
+        { q: "The lion is the fastest land animal.", a: false },
+        { q: "The heart muscle is the only one that never tires.", a: true },
+        { q: "The Amazon River is in North America.", a: false },
+        { q: "Helium is lighter than air.", a: true },
+        { q: "Oxygen gas has a strong smell.", a: false },
+        { q: "London is on the River Thames.", a: true },
+        { q: "Messi was born in Brazil.", a: false },
+        { q: "Cristiano Ronaldo is Portuguese.", a: true },
+        { q: "The World Cup is held every 5 years.", a: false },
+        { q: "Gold melts at room temperature.", a: false },
+        { q: "Diamonds are made of carbon atoms.", a: true },
+        { q: "The South Pole is colder than the North Pole.", a: true },
+        { q: "Lightning strikes Earth 100 times every second.", a: true },
+        { q: "Elephants are the only animals that cannot jump.", a: true },
+        { q: "The Atlantic Ocean is smaller than the Pacific.", a: true },
+        { q: "Tokyo is the capital of Japan.", a: true },
+        { q: "Alexander Graham Bell invented the telephone.", a: true },
+        { q: "Human blood contains iron.", a: true },
+        { q: "Strawberries are part of the rose family.", a: true },
+        { q: "Onions reduce blood sugar levels.", a: true },
+        { q: "A blue whale's heart is the size of a small car.", a: true },
+        { q: "Ostriches bury their heads in sand out of fear.", a: false },
+        { q: "Eagles can live for more than 70 years.", a: true },
+        { q: "Water covers 70% of Earth's surface.", a: true },
+        { q: "Burj Khalifa is the tallest tower in the world.", a: true },
+        { q: "Potatoes originated in Ireland.", a: false },
+        { q: "Cats cannot taste sweets.", a: true },
+        { q: "The moon rotates on its own axis.", a: true },
+        { q: "Oranges contain Vitamin C.", a: true },
+        { q: "Grasshoppers have ears in their bellies.", a: true },
+        { q: "An octopus has 3 hearts.", a: true },
+        { q: "Giraffes have no voice.", a: false },
+        { q: "Mosquitoes are attracted to dark clothes.", a: true },
+        { q: "Turtles can live for more than 150 years.", a: true },
+        { q: "Mount Everest is in Africa.", a: false },
+        { q: "Italy has won the World Cup 4 times.", a: true },
+        // --- Batch 4 (50 additional questions) ---
+        { q: "Spiders belong to the insect family.", a: false },
+        { q: "Venus is the only planet that rotates clockwise.", a: true },
+        { q: "A cheetah can reach a speed of 120 km/h.", a: true },
+        { q: "Bananas grow upwards towards the sun.", a: true },
+        { q: "Lightning is hotter than the surface of the sun.", a: true },
+        { q: "A cloud can weigh more than a million pounds.", a: true },
+        { q: "Humans have a unique tongue print like fingerprints.", a: true },
+        { q: "Human teeth are as strong as shark teeth.", a: true },
+        { q: "Mercury is the hottest planet in the solar system.", a: false },
+        { q: "Diamonds can be dissolved in strong acids.", a: false },
+        { q: "Coca-Cola originally contained cocaine.", a: true },
+        { q: "The longest recorded flight of a chicken was 13 seconds.", a: true },
+        { q: "Astronauts grow about 3% taller in space.", a: true },
+        { q: "A giraffe has the same number of neck bones as a human (7).", a: true },
+        { q: "Butterflies smell flowers with their wings.", a: false },
+        { q: "Hot water turns into ice faster than cold water.", a: true },
+        { q: "The first animated film was produced by Disney.", a: false },
+        { q: "Gold dissolves if placed in mercury.", a: true },
+        { q: "Mosquitoes prefer biting people who just ate bananas.", a: true },
+        { q: "The human heart beats about 2.5 billion times in a lifetime.", a: true },
+        { q: "Turtles can breathe through their butts in winter.", a: true },
+        { q: "Bees can recognize human faces.", a: true },
+        { q: "The Indian Ocean is the deepest ocean in the world.", a: false },
+        { q: "Canada shares the longest land border with the USA.", a: true },
+        { q: "Dinosaurs existed when the pyramids were built.", a: false },
+        { q: "Leonardo da Vinci painted (The Last Supper).", a: true },
+        { q: "Carbon dioxide gas is essential for human breathing.", a: false },
+        { q: "Number 13 is considered unlucky in many Western cultures.", a: true },
+        { q: "A giraffe can clean its ears with its long tongue.", a: true },
+        { q: "The first mobile phone call was made in 1973.", a: true },
+        { q: "Goldfish have a memory span of only 3 seconds.", a: false },
+        { q: "Earth is the only planet not named after a god.", a: true },
+        { q: "The creator of Python language is Dutch.", a: true },
+        { q: "Uranus tilts so much that it rotates on its side.", a: true },
+        { q: "Stomach acid is strong enough to dissolve razor blades.", a: true },
+        { q: "Microwave ovens were invented by accident.", a: true },
+        { q: "The longest Arabic word consists of 15 letters.", a: true },
+        { q: "Oil boils at a lower temperature than water.", a: false },
+        { q: "Blood vessels in a human are long enough to circle Earth twice.", a: true },
+        { q: "Sound travels faster in water than in air.", a: true },
+        { q: "A golden eagle can see a rabbit from 3 kilometers away.", a: true },
+        { q: "An octopus dies shortly after its babies are born.", a: true },
+        { q: "India is the world's largest consumer of rice.", a: false },
+        { q: "Oranges do not naturally grow in the tropics.", a: true },
+        { q: "Japan consists of only 4 main islands.", a: false },
+        { q: "Sound cannot travel through a vacuum.", a: true },
+        { q: "Wood never conducts electricity, even if wet.", a: false },
+        { q: "The right lung holds more air than the left lung.", a: true },
+        { q: "Fingerprints never change from birth until death.", a: true },
+        { q: "A starfish has no blood in its body.", a: true }
+    ]
+};
+
+        let score = 0;
+        let time = 15;
+        let timer;
+        let currentQ;
+        let usedQuestions = [];
+
+        function getLang() {
+            return localStorage.getItem('yayaLang') || 'ar';
+        }
+
+        function applyLanguage() {
+            const lang = getLang();
+            const html = document.getElementById('html-tag');
+            html.lang = lang;
+            html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            const translations = {
+                ar: { score: "النقاط:", instr: "فكر بسرعة.. حقيقة أم كذبة؟", t: "حقيقة", f: "كذبة", over: "خسرت!", final: "نقاطك:", retry: "إعادة المحاولة", home: "الرئيسية" },
+                en: { score: "Score:", instr: "Think fast.. True or Lie?", t: "Truth", f: "Lie", over: "Game Over!", final: "Score:", retry: "Try Again", home: "Home" }
+            };
+
+            const t = translations[lang];
+            document.getElementById('scoreLabel').innerText = t.score;
+            document.getElementById('instruction').innerText = t.instr;
+            document.getElementById('trueLabel').innerText = t.t;
+            document.getElementById('falseLabel').innerText = t.f;
+            document.getElementById('overTitle').innerText = t.over;
+            document.getElementById('finalLabel').innerText = t.final;
+            document.getElementById('retryBtn').innerText = t.retry;
+            document.getElementById('homeBtn').innerText = t.home;
+        }
+
+        function generate() {
+            const lang = getLang();
+            const questions = database[lang];
+            if (usedQuestions.length === questions.length) usedQuestions = [];
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * questions.length);
+            } while (usedQuestions.includes(randomIndex));
+            usedQuestions.push(randomIndex);
+            currentQ = questions[randomIndex];
+            document.getElementById('question').innerText = currentQ.q;
+        }
+
+        function runClock() {
+            clearInterval(timer);
+            time = 15;
+            document.getElementById('time').innerText = time;
+            timer = setInterval(() => {
+                time--;
+                document.getElementById('time').innerText = time;
+                if (time <= 0) endGame();
+            }, 1000);
+        }
+
+        function check(playerAnswer) {
+            if (playerAnswer === currentQ.a) {
+                score += 10;
+                document.getElementById('score').innerText = score;
+                generate();
+                runClock();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('game-over').style.display = 'flex';
+        }
+
+        function start() {
+            score = 0;
+            usedQuestions = [];
+            document.getElementById('score').innerText = 0;
+            document.getElementById('game-over').style.display = 'none';
+            applyLanguage();
+            generate();
+            runClock();
+        }
+
+        window.onload = start;
+    </script>
+</body>
+</html>
